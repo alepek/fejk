@@ -22,7 +22,7 @@ const findMatchingEndpoint = (req, endpoints) => {
     let match = true;
 
     if (!valid) {
-      logger.warn(`Endpoints must contain at least one key. The scenario "${scenario} has at least one endpoint in violation. Violating endpoints are skipped."`); // eslint-disable-line
+      logger.warn(`Endpoint requests must contain at least one key. The scenario "${scenario}" has at least one endpoint in violation. Violating endpoints are skipped.`); // eslint-disable-line
     }
 
     Object.keys(endpoint.request).forEach(key => {

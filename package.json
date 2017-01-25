@@ -9,7 +9,7 @@
   "scripts": {
     "example": "node example/index.js",
     "example:watch": "nodemon --watch src --watch example example/index.js",
-    "test": "test",
+    "test": "echo 'NYI'",
     "lint": "eslint src/**/*.js && echo src is lint-free!",
     "precommit": "npm run lint"
   },
