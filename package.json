@@ -5,6 +5,7 @@
   "engines": {
     "node": "^6.9.0"
   },
+  "entry": "src/smock.js",
   "scripts": {
     "example": "node example/index.js",
     "example:watch": "nodemon --watch src --watch example example/index.js",

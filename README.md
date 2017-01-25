@@ -69,7 +69,7 @@ In this request, the `scenario` parameter will determine which file to load, and
 
 Let's take a look at this example `scenario`.
 
-```
+```JavaScript
 module.exports = {
   endpoints: [
     {
@@ -152,7 +152,7 @@ Clone the repository, `npm install`, `npm run example` and start sending request
 Here's some JS to paste into your console, check out the network tab while running these in the order `GET` `POST` `GET`.
 
 **Initial GET**
-```
+```JavaScript
 (function() {
 var xhr = new XMLHttpRequest();
 xhr.open("GET", "http://localhost:9090/smock/items?scenario=items");
@@ -161,7 +161,7 @@ xhr.send();})();
 ```
 
 **POST**
-```
+```JavaScript
 (function() {
 var data = JSON.stringify({
   "name": "item three"
