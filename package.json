@@ -1,0 +1,44 @@
+{
+  "name": "smock",
+  "version": "1.0.0",
+  "description": "A stateless mock with stateful capabilities",
+  "engines": {
+    "node": "^6.9.0"
+  },
+  "scripts": {
+    "example": "node example/index.js",
+    "example:watch": "nodemon --watch src --watch example example/index.js",
+    "test": "test",
+    "lint": "eslint src/**/*.js && echo src is lint-free!",
+    "precommit": "npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alepek/smock.git"
+  },
+  "author": "alepek",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alepek/smock/issues"
+  },
+  "homepage": "https://github.com/alepek/smock#readme",
+  "dependencies": {
+    "body-parser": "^1.16.0",
+    "compression": "^1.6.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "is-subset": "^0.1.1",
+    "jsonschema": "^1.1.1",
+    "node-dir": "^0.1.16"
+  },
+  "devDependencies": {
+    "eslint": "^3.14.0",
+    "eslint-config-defaults": "^9.0.0",
+    "eslint-config-google": "^0.7.1",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-promise": "^3.4.0",
+    "eslint-plugin-standard": "^2.0.1",
+    "husky": "^0.13.1",
+    "nodemon": "^1.11.0"
+  }
+}
