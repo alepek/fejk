@@ -151,7 +151,7 @@ Clone the repository, `npm install`, `npm run example` and start sending request
 
 Here's some JS to paste into your console, check out the network tab while running these in the order `GET` `POST` `GET`.
 
-**Initial GET**
+**GET**
 ```JavaScript
 (function() {
 var xhr = new XMLHttpRequest();
