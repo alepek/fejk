@@ -4,6 +4,15 @@ smock is a simple stateless HTTP mocking service with a faux-stateful mocking me
 
 Smock is intended to be consumed by a browser-like client, but should work fine for any HTTP client. Cookie capabilities are a prerequisite for faux statefulness.
 
+**ToC**
+
+* [Terminology](#terminology)
+* [Getting started](#getting-started)
+  * [Scenario files](#scenario-files)
+  * [Sending requests](#sending-requests)
+* [Example](#example)
+  * [Running the example](#running-the-example)
+
 ## Terminology
 
 * `smock` - a running instance of `smock`
