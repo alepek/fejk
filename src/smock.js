@@ -27,7 +27,8 @@ const findMatchingEndpoint = (req, endpoints) => {
         const subset = Object.assign({}, req[key]);
         match = match && isSubset(subset, set);
       } else if (key === 'path') {
-        match = match && req[key].includes(endpoint.request[key]);
+        const regexp = RegExp(endpoint.request[key]);
+        match = match && regexp.test(req[key]);
       } else {
         match = match && req[key] === endpoint.request[key];
       }
