@@ -51,7 +51,8 @@ const loadScenario = req => {
   let response;
 
   try {
-    const scenario = require(`${scenarioPath}/${req.query.scenario}`);
+    const scenarioModule = req.query.scenario || 'default';
+    const scenario = require(`${scenarioPath}/${scenarioModule}`);
     const endpoints = scenario.endpoints;
 
     response = findMatchingEndpoint(req, endpoints);
