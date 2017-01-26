@@ -11,7 +11,8 @@
     "example:watch": "nodemon --watch src --watch example example/index.js",
     "test": "echo 'NYI'",
     "lint": "eslint src/**/*.js && echo src is lint-free!",
-    "precommit": "npm run lint"
+    "precommit": "npm run lint",
+    "prepush": "jest"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,17 @@
     "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-standard": "^2.0.1",
     "husky": "^0.13.1",
-    "nodemon": "^1.11.0"
+    "jest": "^18.1.0",
+    "jest-cli": "^18.1.0",
+    "nodemon": "^1.11.0",
+    "rewire": "^2.5.2"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": ["src"],
+    "coverageDirectory": ".coverage",
+    "testPathIgnorePatterns": [
+      "__data__"
+    ]
   }
 }

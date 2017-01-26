@@ -14,16 +14,12 @@ const logger = {
  * Finds the matching endpoint among the provided endpoints, returns false if there are no matches
  * @param  {Object} req       An Express.js request object
  * @param  {Array} endpoints An array of smock endpoints
- * @return {Object}           A single smock endpoint
+ * @return {Object}           A single smock endpoint, or undefined if no matches can be found
  */
 const findMatchingEndpoint = (req, endpoints) => {
   const matches = endpoints.filter(endpoint => {
     const valid = endpoint.request && Object.keys(endpoint.request).length;
     let match = true;
-
-    if (!valid) {
-      logger.warn(`Endpoint requests must contain at least one key. The scenario "${scenario}" has at least one endpoint in violation. Violating endpoints are skipped.`); // eslint-disable-line
-    }
 
     Object.keys(endpoint.request).forEach(key => {
       if (typeof (endpoint.request[key]) === 'object') {
@@ -40,7 +36,7 @@ const findMatchingEndpoint = (req, endpoints) => {
     return match && valid;
   });
 
-  return matches.length && matches[0];
+  return matches.length ? matches[0] : undefined;
 };
 
 /**
@@ -57,7 +53,7 @@ const loadScenario = req => {
     const scenario = require(`${scenarioPath}/${req.query.scenario}`);
     const endpoints = scenario.endpoints;
 
-    response = findMatchingEndpoint(req, endpoints) || undefined;
+    response = findMatchingEndpoint(req, endpoints);
   } catch (err) {
     logger.warn('Scenario server error:', err);
   }
