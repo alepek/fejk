@@ -63,6 +63,19 @@ const loadScenario = req => {
   return response;
 };
 
+/**
+ * 
+ * @param  {Object} req       An Express.js request object
+ * @param  {Object} endpoint  A smock response object
+ * @return {Object}           Response data for the matching request
+ */
+const responseData = (req, endpoint) => {
+  if (typeof(endpoint.response.data) === 'function') {
+    return endpoint.response.data(req);
+  }
+  return endpoint.response.data || 'OK';
+}
+
 app.use(bodyParser.json());
 app.use(cookieParser());
 
@@ -84,7 +97,7 @@ app.all('*', (req, res) => {
     respond = () => {
       const cookies = scenario.response.cookies || {};
       Object.keys(cookies).forEach(key => res.cookie(key, cookies[key]));
-      return res.status(scenario.response.status || 200).send(scenario.response.data || 'OK');
+      return res.status(scenario.response.status || 200).send(responseData(req, scenario));
     };
 
     logger.info(`Scenario found for ${req.method} ${req.path}`);
