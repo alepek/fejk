@@ -175,6 +175,8 @@ Using the `cookies`, it is possible to create a service that appears to be state
 
 Clone the repository, `npm install`, `npm run example` and start sending requests to the smock!
 
+Hit [the colors endpoint](http://localhost:9090/smock/colors) to see the `defaults` mechanism in action.
+
 Here's some JS to paste into your console, check out the network tab while running these in the order `GET` `POST` `GET`.
 
 **GET**
