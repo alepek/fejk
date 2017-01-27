@@ -63,9 +63,17 @@ Any key present in the `request` object must be present in the incoming Express 
 #### `response`
 
 The response object can contain the following properties:
-* `status` - optional, defaults to `200`
-* `data` - optional, defaults to `OK`
-* `cookies` - optional, if omitted no cookies will be set.
+##### `status` [number]
+The status code to respond with. Optional, defaults to `200`.
+
+##### `data` [object | function]
+Optional, defaults to `'OK'`.
+
+* If `data` is an object, that object will be sent as the `body` of the response.
+* If `data` is a function, that function will be executed with the incoming Express request as its only parameter. The return value of the function will be sent as the `body` of the response.
+
+##### `cookies` [object]
+Optional. Any cookies to set in the response. If omitted no cookies will be set.
 
 ### Sending requests
 
@@ -73,11 +81,15 @@ Smock has one optional query string parameter - `scenario`. This parameter speci
 
 If the `scenario` parameter is not specified, smock will attempt to load a `default` scenario. The `default` scenario must be stored in the root of the `SMOCK_PATH` and be named `default.js`.
 
-Example request:
+Example requests:
 ```
 http://localhost:9090/smock/items?scenario=items
 ```
 In this request, the `scenario` parameter will determine which file to load, and the path (and potentially cookies) will determine which `endpoint` to load in that file.
+```
+http://localhost:9090/smock/items
+```
+In this request, the `default` scenario will be used.
 
 ## Example
 
