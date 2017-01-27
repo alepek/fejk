@@ -27,7 +27,8 @@ const findMatchingEndpoint = (req, endpoints) => {
         const subset = Object.assign({}, req[key]);
         match = match && isSubset(subset, set);
       } else if (key === 'path') {
-        match = match && req[key].includes(endpoint.request[key]);
+        const regexp = RegExp(endpoint.request[key]);
+        match = match && regexp.test(req[key]);
       } else {
         match = match && req[key] === endpoint.request[key];
       }
@@ -50,7 +51,8 @@ const loadScenario = req => {
   let response;
 
   try {
-    const scenario = require(`${scenarioPath}/${req.query.scenario}`);
+    const scenarioModule = req.query.scenario || 'default';
+    const scenario = require(`${scenarioPath}/${scenarioModule}`);
     const endpoints = scenario.endpoints;
 
     response = findMatchingEndpoint(req, endpoints);
@@ -59,6 +61,19 @@ const loadScenario = req => {
   }
 
   return response;
+};
+
+/**
+ * Parse response data from endpoint
+ * @param  {Object} req       An Express.js request object
+ * @param  {Object} endpoint  A smock response object
+ * @return {Object}           Response data for the matching request
+ */
+const responseData = (req, endpoint) => {
+  if (typeof(endpoint.response.data) === 'function') {
+    return endpoint.response.data(req);
+  }
+  return endpoint.response.data || 'OK';
 };
 
 app.use(bodyParser.json());
@@ -82,7 +97,7 @@ app.all('*', (req, res) => {
     respond = () => {
       const cookies = scenario.response.cookies || {};
       Object.keys(cookies).forEach(key => res.cookie(key, cookies[key]));
-      return res.status(scenario.response.status || 200).send(scenario.response.data || 'OK');
+      return res.status(scenario.response.status || 200).send(responseData(req, scenario));
     };
 
     logger.info(`Scenario found for ${req.method} ${req.path}`);

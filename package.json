@@ -5,11 +5,12 @@
   "engines": {
     "node": "^6.9.0"
   },
+  "main": "src/smock.js",
   "entry": "src/smock.js",
   "scripts": {
     "example": "node example/index.js",
     "example:watch": "nodemon --watch src --watch example example/index.js",
-    "test": "echo 'NYI'",
+    "test": "jest",
     "lint": "eslint src/**/*.js && echo src is lint-free!",
     "precommit": "npm run lint",
     "prepush": "jest"
