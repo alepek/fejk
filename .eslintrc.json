@@ -1,5 +1,11 @@
 {
-    "extends": "google",
+    "extends": "airbnb",
+    "globals": {
+      "describe": true,
+      "expect": true,
+      "it": true,
+      "test": true
+    },
     "parserOptions": {
       "ecmaVersion": 6
     },

@@ -15,7 +15,7 @@ module.exports = {
             name: 'blue',
             id: '67890',
           },
-        ]
+        ],
       },
     },
   ],

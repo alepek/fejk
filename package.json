@@ -11,7 +11,7 @@
     "example": "node example/index.js",
     "example:watch": "nodemon --watch src --watch example example/index.js",
     "test": "jest",
-    "lint": "eslint src/**/*.js && echo src is lint-free!",
+    "lint": "eslint src && eslint __tests__ && echo lint-free!",
     "precommit": "npm run lint",
     "prepush": "jest"
   },
@@ -36,10 +36,12 @@
   },
   "devDependencies": {
     "eslint": "^3.14.0",
+    "eslint-config-airbnb": "^14.0.0",
     "eslint-config-defaults": "^9.0.0",
-    "eslint-config-google": "^0.7.1",
-    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^3.0.2",
     "eslint-plugin-promise": "^3.4.0",
+    "eslint-plugin-react": "^6.9.0",
     "eslint-plugin-standard": "^2.0.1",
     "husky": "^0.13.1",
     "jest": "^18.1.0",
@@ -49,7 +51,9 @@
   },
   "jest": {
     "collectCoverage": true,
-    "collectCoverageFrom": ["src"],
+    "collectCoverageFrom": [
+      "src"
+    ],
     "coverageDirectory": ".coverage",
     "testPathIgnorePatterns": [
       "__data__"

@@ -1,12 +1,13 @@
 const path = require('path');
 const rewire = require('rewire');
-const smock = rewire('./src/smock');
 const referenceScenario = require('./__data__/scenario');
 const referenceDefaultScenario = require('./__data__/default');
 
-const loadScenario = smock.__get__('loadScenario');
-const findMatchingEndpoint = smock.__get__('findMatchingEndpoint');
-const responseData = smock.__get__('responseData');
+const smock = rewire('./src/smock');
+
+const loadScenario = smock.__get__('loadScenario'); // eslint-disable-line
+const findMatchingEndpoint = smock.__get__('findMatchingEndpoint'); // eslint-disable-line
+const responseData = smock.__get__('responseData'); // eslint-disable-line
 
 describe('endpoint matching', () => {
   it('does not match invalid endpoints', () => {
@@ -61,7 +62,7 @@ describe('endpoint matching', () => {
         status: 200,
       },
     };
-    const endpoints = [endpoint, Object.assign({}, endpoint, {response: {status: 404}})];
+    const endpoints = [endpoint, Object.assign({}, endpoint, { response: { status: 404 } })];
     const result = findMatchingEndpoint({
       path: '/items/123',
     }, endpoints);
@@ -110,8 +111,8 @@ describe('response data parsing', () => {
     const data = { foo: 123 };
     const endpoint = {
       response: {
-        data: data
-      }
+        data,
+      },
     };
 
     const result = responseData({}, endpoint);
@@ -122,7 +123,7 @@ describe('response data parsing', () => {
     const req = { foo: 1 };
     const endpoint = {
       response: {
-        data: (req) => { return req; }
+        data: r => r,
       },
     };
 
@@ -135,28 +136,23 @@ describe('loadScenario', () => {
   it('loads the reference scenario', () => {
     process.env.SMOCK_PATH = path.join(__dirname, '__data__');
 
-    const scenario = loadScenario(
-      {
-        path: '/users',
-        method: 'GET',
-        query: {'scenario': 'scenario', 'foo': 'bar', 'cookiesShould': 'doSuperSetMatching'},
-        cookies: {track: 'this'},
-      }
-    );
+    const scenario = loadScenario({
+      path: '/users',
+      method: 'GET',
+      query: { scenario: 'scenario', foo: 'bar', cookiesShould: 'doSuperSetMatching' },
+      cookies: { track: 'this' },
+    });
     expect(scenario).toEqual(referenceScenario.endpoints[0]);
   });
 
   it('loads the default scenario', () => {
     process.env.SMOCK_PATH = path.join(__dirname, '__data__');
 
-    const scenario = loadScenario(
-      {
-        path: '/colors',
-        method: 'GET',
-        query: {},
-      }
-    );
+    const scenario = loadScenario({
+      path: '/colors',
+      method: 'GET',
+      query: {},
+    });
     expect(scenario).toEqual(referenceDefaultScenario.endpoints[0]);
   });
-
 });

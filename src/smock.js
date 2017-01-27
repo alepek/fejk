@@ -5,9 +5,9 @@ const isSubset = require('is-subset');
 
 const app = express();
 const logger = {
-  warn: (m, err) => console.log(m, err),
-  info: (m, err) => console.log(m, err),
-  error: (m, err) => console.log(m, err),
+  warn: (m, err) => console.log(m, err), // eslint-disable-line
+  info: (m, err) => console.log(m, err), // eslint-disable-line
+  error: (m, err) => console.log(m, err), // eslint-disable-line
 };
 
 /**
@@ -52,7 +52,7 @@ const loadScenario = req => {
 
   try {
     const scenarioModule = req.query.scenario || 'default';
-    const scenario = require(`${scenarioPath}/${scenarioModule}`);
+    const scenario = require(`${scenarioPath}/${scenarioModule}`); // eslint-disable-line
     const endpoints = scenario.endpoints;
 
     response = findMatchingEndpoint(req, endpoints);
@@ -70,7 +70,7 @@ const loadScenario = req => {
  * @return {Object}           Response data for the matching request
  */
 const responseData = (req, endpoint) => {
-  if (typeof(endpoint.response.data) === 'function') {
+  if (typeof (endpoint.response.data) === 'function') {
     return endpoint.response.data(req);
   }
   return endpoint.response.data || 'OK';
@@ -81,7 +81,7 @@ app.use(cookieParser());
 
 app.all('*', (req, res) => {
   let respond;
-  let scenario = loadScenario(req);
+  const scenario = loadScenario(req);
 
   // Allow CORS
   res.set('Access-Control-Allow-Origin', '*');
@@ -107,7 +107,7 @@ app.all('*', (req, res) => {
     logger.warn(`No matching scenario for ${req.method} ${req.path}`);
   }
 
-  respond();
+  return respond();
 });
 
 module.exports = app;

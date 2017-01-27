@@ -8,6 +8,7 @@ Smock is intended to be consumed by a browser-like client, but should work fine 
 
 * [Terminology](#terminology)
 * [Getting started](#getting-started)
+  * [Configuration](#configuration)
   * [Scenario files](#scenario-files)
   * [Sending requests](#sending-requests)
 * [Example](#example)
@@ -41,6 +42,8 @@ process.env.SMOCK_PATH = path.join(__dirname, 'scenarios');
 app.listen(port);
 ```
 
+### Configuration
+
 The `SMOCK_PATH` env variable tells smock where to look for `scenario` files.
 
 ### Scenario files
@@ -54,7 +57,7 @@ Each `endpoint` must contain a `request` and `response` object. The `request` ob
 The `request` object needs to contain at least one key, but can contain any key that is present in an Express request.
 
 Any key present in the `request` object must be present in the incoming Express request object and match exactly, with two exceptions:
- * `path` - The path in the `request` object only needs to be a **subset** of the path in the incoming request.
+ * `path` - The path in the `request` can be expressed as a regex.
  * `cookies` - The cookies in the `request` object only needs to be a **subset** of the cookies in the incoming request.
 
 #### `response`
@@ -66,7 +69,9 @@ The response object can contain the following properties:
 
 ### Sending requests
 
-Smock has one required query string parameter - `scenario`. This parameter specifies which scenario file to load. E.g. if you want to use the scenario from the file `/scenarios/entries.js` and you've specified the `SMOCK_PATH` as `/scenarios`, the `scenario` parameter should be `entries`.
+Smock has one optional query string parameter - `scenario`. This parameter specifies which scenario file to load. E.g. if you want to use the scenario from the file `/scenarios/entries.js` and you've specified the `SMOCK_PATH` as `/scenarios`, the `scenario` parameter should be `entries`.
+
+If the `scenario` parameter is not specified, smock will attempt to load a `default` scenario. The `default` scenario must be stored in the root of the `SMOCK_PATH` and be named `default.js`.
 
 Example request:
 ```
