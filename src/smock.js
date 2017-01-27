@@ -64,7 +64,7 @@ const loadScenario = req => {
 };
 
 /**
- * 
+ * Parse response data from endpoint
  * @param  {Object} req       An Express.js request object
  * @param  {Object} endpoint  A smock response object
  * @return {Object}           Response data for the matching request
@@ -74,7 +74,7 @@ const responseData = (req, endpoint) => {
     return endpoint.response.data(req);
   }
   return endpoint.response.data || 'OK';
-}
+};
 
 app.use(bodyParser.json());
 app.use(cookieParser());

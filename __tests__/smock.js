@@ -2,9 +2,11 @@ const path = require('path');
 const rewire = require('rewire');
 const smock = rewire('./src/smock');
 const referenceScenario = require('./__data__/scenario');
+const referenceDefaultScenario = require('./__data__/default');
 
 const loadScenario = smock.__get__('loadScenario');
 const findMatchingEndpoint = smock.__get__('findMatchingEndpoint');
+const responseData = smock.__get__('responseData');
 
 describe('endpoint matching', () => {
   it('does not match invalid endpoints', () => {
@@ -29,6 +31,22 @@ describe('endpoint matching', () => {
     };
     const result = findMatchingEndpoint({
       path: '/items/123',
+    }, [endpoint]);
+
+    expect(result).toBe(endpoint);
+  });
+
+  it('matches valid regex endpoint', () => {
+    const endpoint = {
+      request: {
+        path: '/item/\\d',
+      },
+      response: {
+        status: 200,
+      },
+    };
+    const result = findMatchingEndpoint({
+      path: '/item/123/foo',
     }, [endpoint]);
 
     expect(result).toBe(endpoint);
@@ -87,6 +105,32 @@ describe('endpoint matching', () => {
   });
 });
 
+describe('response data parsing', () => {
+  it('extracts static data', () => {
+    const data = { foo: 123 };
+    const endpoint = {
+      response: {
+        data: data
+      }
+    };
+
+    const result = responseData({}, endpoint);
+    expect(result).toBe(data);
+  });
+
+  it('accepts a function as data', () => {
+    const req = { foo: 1 };
+    const endpoint = {
+      response: {
+        data: (req) => { return req; }
+      },
+    };
+
+    const result = responseData(req, endpoint);
+    expect(result).toBe(req);
+  });
+});
+
 describe('loadScenario', () => {
   it('loads the reference scenario', () => {
     process.env.SMOCK_PATH = path.join(__dirname, '__data__');
@@ -101,4 +145,18 @@ describe('loadScenario', () => {
     );
     expect(scenario).toEqual(referenceScenario.endpoints[0]);
   });
+
+  it('loads the default scenario', () => {
+    process.env.SMOCK_PATH = path.join(__dirname, '__data__');
+
+    const scenario = loadScenario(
+      {
+        path: '/colors',
+        method: 'GET',
+        query: {},
+      }
+    );
+    expect(scenario).toEqual(referenceDefaultScenario.endpoints[0]);
+  });
+
 });
