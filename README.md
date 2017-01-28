@@ -74,6 +74,8 @@ Optional, defaults to `'OK'`.
 * If `data` is an object, that object will be sent as the `body` of the response.
 * If `data` is a function, that function will be executed with the incoming Express request as its only parameter. The return value of the function will be sent as the `body` of the response.
 
+**Heads up!** Remember to keep your data functions [Pure](https://en.wikipedia.org/wiki/Pure_function) if you want to keep your smock stateless.
+
 ##### `cookies` [object]
 Optional. Any cookies to set in the response. If omitted no cookies will be set.
 
