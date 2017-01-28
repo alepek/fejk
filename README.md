@@ -1,5 +1,7 @@
 # Smock
 
+[![Build Status](https://travis-ci.org/alepek/smock.svg?branch=master)](https://travis-ci.org/alepek/smock)
+
 smock is a simple stateless HTTP mocking service with a faux-stateful mocking mechanism based on cookies.
 
 Smock is intended to be consumed by a browser-like client, but should work fine for any HTTP client. Cookie capabilities are a prerequisite for faux statefulness.
