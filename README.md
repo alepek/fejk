@@ -91,7 +91,7 @@ http://localhost:9090/smock/items?scenario=items
 ```
 In this request, the `scenario` parameter will determine which file to load, and the path (and potentially cookies) will determine which `endpoint` to load in that file.
 ```
-http://localhost:9090/smock/items
+http://localhost:9090/smock/colors
 ```
 In this request, the `default` scenario will be used.
 
