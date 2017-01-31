@@ -13,8 +13,8 @@ const logger = {
 /**
  * Finds the matching endpoint among the provided endpoints, returns false if there are no matches
  * @param  {Object} req       An Express.js request object
- * @param  {Array} endpoints An array of smock endpoints
- * @return {Object}           A single smock endpoint, or undefined if no matches can be found
+ * @param  {Array} endpoints An array of fejk endpoints
+ * @return {Object}           A single fejk endpoint, or undefined if no matches can be found
  */
 const findMatchingEndpoint = (req, endpoints) => {
   const matches = endpoints.filter(endpoint => {
@@ -41,13 +41,13 @@ const findMatchingEndpoint = (req, endpoints) => {
 };
 
 /**
- * Fetches the response object for the smock object matching the incoming request, or undefined
+ * Fetches the response object for the fejk object matching the incoming request, or undefined
  * if there is no response matching the incoming request.
  * @param  {Object} req An Express request object
- * @return {Object}     A smock response object
+ * @return {Object}     A fejk response object
  */
 const loadScenario = req => {
-  const scenarioPath = process.env.SMOCK_PATH;
+  const scenarioPath = process.env.FEJK_PATH;
   let response;
 
   try {
@@ -66,7 +66,7 @@ const loadScenario = req => {
 /**
  * Parse response data from endpoint
  * @param  {Object} req       An Express.js request object
- * @param  {Object} endpoint  A smock response object
+ * @param  {Object} endpoint  A fejk response object
  * @return {Object}           Response data for the matching request
  */
 const responseData = (req, endpoint) => {

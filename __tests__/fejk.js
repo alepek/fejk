@@ -3,11 +3,11 @@ const rewire = require('rewire');
 const referenceScenario = require('./__data__/scenario');
 const referenceDefaultScenario = require('./__data__/default');
 
-const smock = rewire('./src/smock');
+const fejk = rewire('./src/fejk');
 
-const loadScenario = smock.__get__('loadScenario'); // eslint-disable-line
-const findMatchingEndpoint = smock.__get__('findMatchingEndpoint'); // eslint-disable-line
-const responseData = smock.__get__('responseData'); // eslint-disable-line
+const loadScenario = fejk.__get__('loadScenario'); // eslint-disable-line
+const findMatchingEndpoint = fejk.__get__('findMatchingEndpoint'); // eslint-disable-line
+const responseData = fejk.__get__('responseData'); // eslint-disable-line
 
 describe('endpoint matching', () => {
   it('does not match invalid endpoints', () => {
@@ -134,7 +134,7 @@ describe('response data parsing', () => {
 
 describe('loadScenario', () => {
   it('loads the reference scenario', () => {
-    process.env.SMOCK_PATH = path.join(__dirname, '__data__');
+    process.env.FEJK_PATH = path.join(__dirname, '__data__');
 
     const scenario = loadScenario({
       path: '/users',
@@ -146,7 +146,7 @@ describe('loadScenario', () => {
   });
 
   it('loads the default scenario', () => {
-    process.env.SMOCK_PATH = path.join(__dirname, '__data__');
+    process.env.FEJK_PATH = path.join(__dirname, '__data__');
 
     const scenario = loadScenario({
       path: '/colors',

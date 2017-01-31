@@ -3,16 +3,16 @@ const express = require('express');
 const path = require('path');
 
 
-const smock = require('../src/smock');
+const fejk = require('../src/fejk');
 const port = process.env.PORT || 9090;
 
 const app = express();
 
 app.use(compression());
-app.use('/smock', smock);
+app.use('/fejk', fejk);
 
-process.env.SMOCK_PATH = path.join(__dirname, 'scenarios');
+process.env.FEJK_PATH = path.join(__dirname, 'scenarios');
 
 app.listen(port, () => {
-  console.log(`Smock is now running at localhost:${port}`);
+  console.log(`Fejk is now running at localhost:${port}`);
 });

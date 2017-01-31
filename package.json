@@ -1,12 +1,12 @@
 {
-  "name": "smock",
+  "name": "fejk",
   "version": "1.0.0",
   "description": "A stateless mock with stateful capabilities",
   "engines": {
     "node": "^6.9.0"
   },
-  "main": "src/smock.js",
-  "entry": "src/smock.js",
+  "main": "src/fejk.js",
+  "entry": "src/fejk.js",
   "scripts": {
     "example": "node example/index.js",
     "example:watch": "nodemon --watch src --watch example example/index.js",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alepek/smock.git"
+    "url": "git+https://github.com/alepek/fejk.git"
   },
   "author": "alepek",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/alepek/smock/issues"
+    "url": "https://github.com/alepek/fejk/issues"
   },
-  "homepage": "https://github.com/alepek/smock#readme",
+  "homepage": "https://github.com/alepek/fejk#readme",
   "dependencies": {
     "body-parser": "^1.16.0",
     "compression": "^1.6.2",

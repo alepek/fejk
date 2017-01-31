@@ -1,10 +1,10 @@
-# Smock
+# Fejk
 
-[![Build Status](https://travis-ci.org/alepek/smock.svg?branch=master)](https://travis-ci.org/alepek/smock)
+[![Build Status](https://travis-ci.org/alepek/fejk.svg?branch=master)](https://travis-ci.org/alepek/fejk)
 
-smock is a simple stateless HTTP mocking service with a faux-stateful mocking mechanism based on cookies.
+Fejk is a simple stateless HTTP mocking service with a faux-stateful mocking mechanism based on cookies.
 
-Smock is intended to be consumed by a browser-like client, but should work fine for any HTTP client. Cookie capabilities are a prerequisite for faux statefulness.
+Fejk is intended to be consumed by a browser-like client, but should work fine for any HTTP client. Cookie capabilities are a prerequisite for faux statefulness.
 
 **ToC**
 
@@ -18,7 +18,7 @@ Smock is intended to be consumed by a browser-like client, but should work fine 
 
 ## Terminology
 
-* `smock` - a running instance of `smock`
+* `fejk` - a running instance of `fejk`
 * `scenario` - a collection of `endpoints`, stored in a `.js` file
 * `endpoints` - an array of `endpoint` objects
 * `endpoint` - an object containing a `request` and `response`
@@ -31,22 +31,22 @@ Prerequisites: Node.js `^6.9.0`, Express.js.
 
 ```
 const express = require('express');
-const smock = require('smock');
+const fejk = require('fejk');
 
 const port = process.env.PORT || 9090;
 const app = express();
 
-// Feel free to mount the smock express app under any route
-app.use('/smock', smock);
+// Feel free to mount the fejk express app under any route
+app.use('/fejk', fejk);
 
-// Instructs smock where to look for scenario files
-process.env.SMOCK_PATH = path.join(__dirname, 'scenarios');
+// Instructs fejk where to look for scenario files
+process.env.FEJK_PATH = path.join(__dirname, 'scenarios');
 app.listen(port);
 ```
 
 ### Configuration
 
-The `SMOCK_PATH` env variable tells smock where to look for `scenario` files.
+The `FEJK_PATH` env variable tells fejk where to look for `scenario` files.
 
 ### Scenario files
 
@@ -74,24 +74,24 @@ Optional, defaults to `'OK'`.
 * If `data` is an object, that object will be sent as the `body` of the response.
 * If `data` is a function, that function will be executed with the incoming Express request as its only parameter. The return value of the function will be sent as the `body` of the response.
 
-**Heads up!** Remember to keep your data functions [Pure](https://en.wikipedia.org/wiki/Pure_function) if you want to keep your smock stateless.
+**Heads up!** Remember to keep your data functions [Pure](https://en.wikipedia.org/wiki/Pure_function) if you want to keep your fejk stateless.
 
 ##### `cookies` [object]
 Optional. Any cookies to set in the response. If omitted no cookies will be set.
 
 ### Sending requests
 
-Smock has one optional query string parameter - `scenario`. This parameter specifies which scenario file to load. E.g. if you want to use the scenario from the file `/scenarios/entries.js` and you've specified the `SMOCK_PATH` as `/scenarios`, the `scenario` parameter should be `entries`.
+Fejk has one optional query string parameter - `scenario`. This parameter specifies which scenario file to load. E.g. if you want to use the scenario from the file `/scenarios/entries.js` and you've specified the `FEJK_PATH` as `/scenarios`, the `scenario` parameter should be `entries`.
 
-If the `scenario` parameter is not specified, smock will attempt to load a `default` scenario. The `default` scenario must be stored in the root of the `SMOCK_PATH` and be named `default.js`.
+If the `scenario` parameter is not specified, fejk will attempt to load a `default` scenario. The `default` scenario must be stored in the root of the `FEJK_PATH` and be named `default.js`.
 
 Example requests:
 ```
-http://localhost:9090/smock/items?scenario=items
+http://localhost:9090/fejk/items?scenario=items
 ```
 In this request, the `scenario` parameter will determine which file to load, and the path (and potentially cookies) will determine which `endpoint` to load in that file.
 ```
-http://localhost:9090/smock/colors
+http://localhost:9090/fejk/colors
 ```
 In this request, the `default` scenario will be used.
 
@@ -177,9 +177,9 @@ Using the `cookies`, it is possible to create a service that appears to be state
 
 ### Running the example
 
-Clone the repository, `npm install`, `npm run example` and start sending requests to the smock!
+Clone the repository, `npm install`, `npm run example` and start sending requests to the fejk!
 
-Hit [the colors endpoint](http://localhost:9090/smock/colors) to see the `defaults` mechanism in action.
+Hit [the colors endpoint](http://localhost:9090/fejk/colors) to see the `defaults` mechanism in action.
 
 Here's some JS to paste into your console, check out the network tab while running these in the order `GET` `POST` `GET`.
 
@@ -187,7 +187,7 @@ Here's some JS to paste into your console, check out the network tab while runni
 ```JavaScript
 (function() {
 var xhr = new XMLHttpRequest();
-xhr.open("GET", "http://localhost:9090/smock/items?scenario=items");
+xhr.open("GET", "http://localhost:9090/fejk/items?scenario=items");
 
 xhr.send();})();
 ```
@@ -200,7 +200,7 @@ var data = JSON.stringify({
 });
 
 var xhr = new XMLHttpRequest();
-xhr.open("POST", "http://localhost:9090/smock/items?scenario=items");
+xhr.open("POST", "http://localhost:9090/fejk/items?scenario=items");
 xhr.setRequestHeader("content-type", "application/json");
 
 xhr.send(data);})();
