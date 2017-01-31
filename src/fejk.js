@@ -2,13 +2,9 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const isSubset = require('is-subset');
+const log = require('fancy-log');
 
 const app = express();
-const logger = {
-  warn: (m, err) => console.log(m, err), // eslint-disable-line
-  info: (m, err) => console.log(m, err), // eslint-disable-line
-  error: (m, err) => console.log(m, err), // eslint-disable-line
-};
 
 /**
  * Finds the matching endpoint among the provided endpoints, returns false if there are no matches
@@ -57,7 +53,7 @@ const loadScenario = req => {
 
     response = findMatchingEndpoint(req, endpoints);
   } catch (err) {
-    logger.warn('Scenario server error:', err);
+    log.error('Scenario server error:', err);
   }
 
   return response;
@@ -100,11 +96,11 @@ app.all('*', (req, res) => {
       return res.status(scenario.response.status || 200).send(responseData(req, scenario));
     };
 
-    logger.info(`Scenario found for ${req.method} ${req.path}`);
+    log.info(`Scenario found for ${req.method} ${req.path}`);
   } else { // eslint-disable-line
     respond = () => res.status(500).send('No endpoint match found!');
 
-    logger.warn(`No matching scenario for ${req.method} ${req.path}`);
+    log.warn(`No matching scenario for ${req.method} ${req.path}`);
   }
 
   return respond();

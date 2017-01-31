@@ -2,8 +2,8 @@ const compression = require('compression');
 const express = require('express');
 const path = require('path');
 
-
 const fejk = require('../src/fejk');
+
 const port = process.env.PORT || 9090;
 
 const app = express();
