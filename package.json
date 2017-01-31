@@ -1,6 +1,6 @@
 {
   "name": "fejk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A stateless mock with stateful capabilities",
   "engines": {
     "node": "^6.9.0"
