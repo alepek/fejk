@@ -30,6 +30,7 @@ Fejk is intended to be consumed by a browser-like client, but should work fine f
 Prerequisites: Node.js `^6.9.0`, Express.js.
 
 ```
+const path = require('path');
 const express = require('express');
 const fejk = require('fejk');
 
