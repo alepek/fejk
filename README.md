@@ -66,6 +66,7 @@ Any key present in the `request` object must be present in the incoming Express 
 #### `response`
 
 The response object can contain the following properties:
+
 ##### `status` [number]
 The status code to respond with. Optional, defaults to `200`.
 
