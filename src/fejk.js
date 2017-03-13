@@ -83,6 +83,7 @@ app.all('*', (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   res.set('Access-Control-Allow-Methods', 'GET, PUT, POST, OPTIONS, DELETE');
   res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.set('Cache-Control', 'no-cache');
 
   // For now, just respond with a 200 to potential pre-flight requests
   if (req.method === 'OPTIONS') {
