@@ -150,9 +150,11 @@ describe('response data parsing', () => {
 });
 
 describe('loadScenario', () => {
-  it('loads the reference scenario', () => {
+  beforeEach(() => {
     process.env.FEJK_PATH = path.join(__dirname, '__data__');
+  });
 
+  it('loads the reference scenario', () => {
     const scenario = loadScenario({
       path: '/users',
       method: 'GET',
@@ -162,9 +164,19 @@ describe('loadScenario', () => {
     expect(scenario).toEqual(referenceScenario.endpoints[0]);
   });
 
-  it('loads the default scenario', () => {
-    process.env.FEJK_PATH = path.join(__dirname, '__data__');
+  it('does not use the require cache', () => {
+    const load = () => loadScenario({
+      path: '/impure',
+      query: { scenario: 'impure' },
+      method: 'GET',
+    });
 
+    expect(load().response.data()).toBe(1);
+    expect(load().response.data()).toBe(1);
+    expect(load().response.data()).toBe(1);
+  });
+
+  it('loads the default scenario', () => {
     const scenario = loadScenario({
       path: '/colors',
       method: 'GET',

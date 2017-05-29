@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const decache = require('decache');
 const express = require('express');
 const isSubset = require('is-subset');
 const log = require('fancy-log');
@@ -48,7 +49,10 @@ const loadScenario = req => {
 
   try {
     const scenarioModule = req.query.scenario || 'default';
-    const scenario = require(`${scenarioPath}/${scenarioModule}`); // eslint-disable-line
+    const fullScenarioPath = `${scenarioPath}/${scenarioModule}`;
+    // clear module from require cache
+    decache(fullScenarioPath);
+    const scenario = require(fullScenarioPath); // eslint-disable-line
     const endpoints = scenario.endpoints;
 
     response = findMatchingEndpoint(req, endpoints);
