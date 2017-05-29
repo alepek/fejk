@@ -27,7 +27,7 @@ Fejk is intended to be consumed by a browser-like client, but should work fine f
 
 ## Getting started
 
-Prerequisites: Node.js `^6.9.0`, Express.js.
+Prerequisites: Node.js `^6.10.0`, Express.js.
 
 ```
 const path = require('path');
@@ -76,7 +76,7 @@ Optional, defaults to `'OK'`.
 * If `data` is an object, that object will be sent as the `body` of the response.
 * If `data` is a function, that function will be executed with the incoming Express request as its only parameter. The return value of the function will be sent as the `body` of the response.
 
-**Heads up!** Remember to keep your data functions [Pure](https://en.wikipedia.org/wiki/Pure_function) if you want to keep your fejk stateless.
+**Heads up!** `fejk` does not use the require cache to store scenario files, meaning that **the data function must be [Pure](https://en.wikipedia.org/wiki/Pure_function)**. If you provide an impure function it will always respond with the initial state.
 
 ##### `cookies` [object]
 Optional. Any cookies to set in the response. If omitted no cookies will be set.
