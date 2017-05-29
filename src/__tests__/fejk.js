@@ -37,6 +37,23 @@ describe('endpoint matching', () => {
     expect(result).toBe(endpoint);
   });
 
+  it('tolerates empty request fields', () => {
+    const endpoint = {
+      request: {
+        path: '/items',
+      },
+      response: {
+        status: 200,
+      },
+    };
+    const result = findMatchingEndpoint({
+      path: '/items/123',
+      cookies: {},
+    }, [endpoint]);
+
+    expect(result).toBe(endpoint);
+  });
+
   it('matches valid regex endpoint', () => {
     const endpoint = {
       request: {
