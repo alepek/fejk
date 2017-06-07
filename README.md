@@ -59,9 +59,9 @@ Each `endpoint` must contain a `request` and `response` object. The `request` ob
 
 The `request` object needs to contain at least one key, but can contain any key that is present in an Express request.
 
-Any key present in the `request` object must be present in the incoming Express request object and match exactly, with two exceptions:
+Any key present in the `request` object must be present in the incoming Express request object and match exactly, with these exceptions:
  * `path` - The path in the `request` can be expressed as a regex.
- * `cookies` - The cookies in the `request` object only needs to be a **subset** of the cookies in the incoming request.
+ * objects - Objects in the `request` object only needs to be a **subset** of the corresponding field in the incoming Express request. This is useful for fields such as `cookies`.
 
 #### `response`
 
