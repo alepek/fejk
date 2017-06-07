@@ -1,3 +1,6 @@
+## 2.0.1
+Clarify `request` object field handling in README.md.
+
 ## 2.0.0
 Potentially breaking change - do not use require cache, effectively disallowing impure functions as data generators.
 
