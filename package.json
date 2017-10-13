@@ -1,9 +1,9 @@
 {
   "name": "fejk",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A stateless mock with stateful capabilities",
   "engines": {
-    "node": "^6.10.0"
+    "node": ">=6.10.0"
   },
   "main": "src/fejk.js",
   "entry": "src/fejk.js",
