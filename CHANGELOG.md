@@ -1,3 +1,6 @@
+## 2.0.2
+Support node 6 and up via package.json
+
 ## 2.0.1
 Clarify `request` object field handling in README.md.
 
