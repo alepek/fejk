@@ -33,13 +33,16 @@ function fejkHandler(options, req, res) {
   res.status(404).send('No endpoint match found!');
 }
 
-module.exports = (options = { path: process.env.FEJK_PATH }) => {
+module.exports = ({
+  path = process.env.FEJK_PATH,
+  scenario = 'default',
+} = {}) => {
   const router = express.Router();
 
   router.use(bodyParser.json());
   router.use(cookieParser());
 
-  router.all('*', fejkHandler.bind(null, options));
+  router.all('*', fejkHandler.bind(null, { path, scenario }));
 
   return router;
 };

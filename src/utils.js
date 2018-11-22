@@ -53,7 +53,7 @@ const loadScenario = (req, options) => {
   let response;
 
   try {
-    const scenarioModule = req.query.scenario || 'default';
+    const scenarioModule = req.query.scenario || options.scenario;
     const fullScenarioPath = `${options.path}/${scenarioModule}`;
 
     // See https://github.com/dwyl/decache/pull/37
