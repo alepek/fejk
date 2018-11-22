@@ -47,7 +47,8 @@ app.listen(port);
 
 ```js
 fejk({
-  path: '/path/to/scenarios' // Defaults to process.env.FEJK_PATH
+  path: '/path/to/scenarios', // Defaults to process.env.FEJK_PATH
+  scenario: 'my-scenario', // Defaults to `default`
 });
 ```
 

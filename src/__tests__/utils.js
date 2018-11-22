@@ -166,6 +166,7 @@ describe('response data parsing', () => {
 describe('loadScenario', () => {
   const options = {
     path: path.join(__dirname, '__data__'),
+    scenario: 'default',
   };
 
   it('loads the reference scenario', () => {
