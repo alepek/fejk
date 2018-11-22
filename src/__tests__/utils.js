@@ -145,9 +145,9 @@ describe('response data parsing', () => {
 });
 
 describe('loadScenario', () => {
-  beforeEach(() => {
-    process.env.FEJK_PATH = path.join(__dirname, '__data__');
-  });
+  const options = {
+    path: path.join(__dirname, '__data__'),
+  };
 
   it('loads the reference scenario', () => {
     const scenario = loadScenario({
@@ -155,7 +155,7 @@ describe('loadScenario', () => {
       method: 'GET',
       query: { scenario: 'scenario', foo: 'bar', cookiesShould: 'doSuperSetMatching' },
       cookies: { track: 'this' },
-    });
+    }, options);
     expect(scenario).toEqual(referenceScenario.endpoints[0]);
   });
 
@@ -164,7 +164,7 @@ describe('loadScenario', () => {
       path: '/impure',
       query: { scenario: 'impure' },
       method: 'GET',
-    });
+    }, options);
 
     expect(load().response.data()).toBe(1);
     expect(load().response.data()).toBe(1);
@@ -176,7 +176,18 @@ describe('loadScenario', () => {
       path: '/colors',
       method: 'GET',
       query: {},
-    });
+    }, options);
     expect(scenario).toEqual(referenceDefaultScenario.endpoints[0]);
+  });
+
+  it('respects the options path', () => {
+    const scenario = loadScenario({
+      path: '/colors',
+      method: 'GET',
+      query: {},
+    }, {
+      path: '.',
+    });
+    expect(scenario).not.toBeDefined();
   });
 });

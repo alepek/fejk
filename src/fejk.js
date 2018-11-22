@@ -5,14 +5,8 @@ const log = require('fancy-log');
 
 const { loadScenario, responseData } = require('./utils');
 
-const app = express.Router();
-
-app.use(bodyParser.json());
-app.use(cookieParser());
-
-app.all('*', (req, res) => {
-  let respond;
-  const scenario = loadScenario(req);
+function fejkHandler(options, req, res) {
+  const scenario = loadScenario(req, options);
 
   // Allow CORS
   res.set('Access-Control-Allow-Origin', '*');
@@ -26,20 +20,26 @@ app.all('*', (req, res) => {
   }
 
   if (scenario) {
-    respond = () => {
-      const cookies = scenario.response.cookies || {};
-      Object.keys(cookies).forEach(key => res.cookie(key, cookies[key]));
-      return res.status(scenario.response.status || 200).send(responseData(req, scenario));
-    };
-
     log.info(`Scenario found for ${req.method} ${req.path}`);
-  } else { // eslint-disable-line
-    respond = () => res.status(404).send('No endpoint match found!');
 
-    log.warn(`No matching scenario for ${req.method} ${req.path}`);
+    const cookies = scenario.response.cookies || {};
+    Object.keys(cookies).forEach(key => res.cookie(key, cookies[key]));
+
+    return res.status(scenario.response.status || 200).send(responseData(req, scenario));
   }
 
-  return respond();
-});
+  log.warn(`No matching scenario for ${req.method} ${req.path}`);
 
-module.exports = app;
+  res.status(404).send('No endpoint match found!');
+}
+
+module.exports = (options = { path: process.env.FEJK_PATH }) => {
+  const router = express.Router();
+
+  router.use(bodyParser.json());
+  router.use(cookieParser());
+
+  router.all('*', fejkHandler.bind(null, options));
+
+  return router;
+};
