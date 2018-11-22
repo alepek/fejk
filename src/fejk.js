@@ -5,7 +5,7 @@ const log = require('fancy-log');
 
 const { loadScenario, responseData } = require('./utils');
 
-const app = express();
+const app = express.Router();
 
 app.use(bodyParser.json());
 app.use(cookieParser());
