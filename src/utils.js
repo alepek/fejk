@@ -10,23 +10,33 @@ const log = require('fancy-log');
  */
 const findMatchingEndpoint = (req, endpoints) => {
   const matches = endpoints.filter(endpoint => {
-    const valid = endpoint.request && Object.keys(endpoint.request).length;
+    const { request } = endpoint;
+
+    if (typeof request === 'function') {
+      return request(req);
+    }
+
+    const valid = request && Object.keys(request).length;
+    if (!valid) {
+      return false;
+    }
+
     let match = true;
 
-    Object.keys(endpoint.request).forEach(key => {
-      if (typeof (endpoint.request[key]) === 'object') {
-        const set = Object.assign({}, endpoint.request[key]);
+    Object.keys(request).forEach(key => {
+      if (typeof (request[key]) === 'object') {
+        const set = Object.assign({}, request[key]);
         const subset = Object.assign({}, req[key]);
         match = match && isSubset(subset, set);
       } else if (key === 'path') {
-        const regexp = RegExp(endpoint.request[key]);
+        const regexp = RegExp(request[key]);
         match = match && regexp.test(req[key]);
       } else {
-        match = match && req[key] === endpoint.request[key];
+        match = match && req[key] === request[key];
       }
     });
 
-    return match && valid;
+    return match;
   });
 
   return matches.length ? matches[0] : undefined;

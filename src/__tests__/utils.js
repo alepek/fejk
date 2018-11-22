@@ -116,6 +116,25 @@ describe('endpoint matching', () => {
 
     expect(result).toBe(endpoints[1]);
   });
+
+  it('matches endpoint with custom validator', () => {
+    expect.assertions(2);
+
+    const endpoints = [{
+      request(req) {
+        expect(req.path).toBe('/items/123');
+        return true;
+      },
+      response: {
+        status: 200,
+      },
+    }];
+    const result = findMatchingEndpoint({
+      path: '/items/123',
+    }, endpoints);
+
+    expect(result).toBe(endpoints[0]);
+  });
 });
 
 describe('response data parsing', () => {

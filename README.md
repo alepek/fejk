@@ -65,6 +65,8 @@ Any key present in the `request` object must be present in the incoming Express 
  * `path` - The path in the `request` can be expressed as a regex.
  * objects - Objects in the `request` object only needs to be a **subset** of the corresponding field in the incoming Express request. This is useful for fields such as `cookies`.
 
+Alternatively `request` can be a validator function, which is passed the incoming express `req` as a first parameter.
+
 #### `response`
 
 The response object can contain the following properties:
@@ -103,7 +105,7 @@ In this request, the `default` scenario will be used.
 
 Let's take a look at this example `scenario`.
 
-```JavaScript
+```js
 module.exports = {
   endpoints: [
     {
@@ -167,6 +169,15 @@ module.exports = {
         },
       },
     },
+    {
+      request(req) {
+        return req.headers.host.match(/foo\d\.com/);
+      },
+      response: {
+        status: 200,
+        data: 'bar'
+      }
+    }
   ],
 };
 ```
