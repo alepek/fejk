@@ -165,6 +165,9 @@ describe('response data parsing', () => {
 
 describe('loadScenario', () => {
   const options = {
+    logger: {
+      error: jest.fn(),
+    },
     path: path.join(__dirname, '__data__'),
     scenario: 'default',
   };
@@ -205,9 +208,8 @@ describe('loadScenario', () => {
       path: '/colors',
       method: 'GET',
       query: {},
-    }, {
-      path: '.',
-    });
+    }, Object.assign({}, options, { path: '.' }));
+
     expect(scenario).not.toBeDefined();
   });
 });

@@ -1,6 +1,5 @@
 const decache = require('decache');
 const isSubset = require('is-subset');
-const log = require('fancy-log');
 
 /**
  * Finds the matching endpoint among the provided endpoints, returns false if there are no matches
@@ -50,11 +49,12 @@ const findMatchingEndpoint = (req, endpoints) => {
  * @return {Object}         A fejk response object
  */
 const loadScenario = (req, options) => {
+  const { logger, path, scenario: defaultScenario } = options;
   let response;
 
   try {
-    const scenarioModule = req.query.scenario || options.scenario;
-    const fullScenarioPath = `${options.path}/${scenarioModule}`;
+    const scenarioModule = req.query.scenario || defaultScenario;
+    const fullScenarioPath = `${path}/${scenarioModule}`;
 
     // See https://github.com/dwyl/decache/pull/37
     if (typeof jest !== 'undefined') {
@@ -68,8 +68,13 @@ const loadScenario = (req, options) => {
     const endpoints = scenario.endpoints;
 
     response = findMatchingEndpoint(req, endpoints);
+
+    if (!response) {
+      logger.warn(`Scenario not found for: ${
+        req.method} ${req.protocol}://${req.headers.host}${req.url}`);
+    }
   } catch (err) {
-    log.error('Scenario server error:', err);
+    logger.error('Scenario server error:', err);
   }
 
   return response;

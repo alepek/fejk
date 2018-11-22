@@ -47,8 +47,9 @@ app.listen(port);
 
 ```js
 fejk({
-  path: '/path/to/scenarios', // Defaults to process.env.FEJK_PATH
-  scenario: 'my-scenario', // Defaults to `default`
+  logger: customLogger, // Default: console
+  path: '/path/to/scenarios', // Default: process.env.FEJK_PATH
+  scenario: 'my-scenario', // Default: `default`
 });
 ```
 

@@ -1,11 +1,11 @@
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const express = require('express');
-const log = require('fancy-log');
 
 const { loadScenario, responseData } = require('./utils');
 
 function fejkHandler(options, req, res) {
+  const { logger } = options;
   const scenario = loadScenario(req, options);
 
   // Allow CORS
@@ -20,7 +20,7 @@ function fejkHandler(options, req, res) {
   }
 
   if (scenario) {
-    log.info(`Scenario found for ${req.method} ${req.path}`);
+    logger.info(`Scenario found for ${req.method} ${req.path}`);
 
     const cookies = scenario.response.cookies || {};
     Object.keys(cookies).forEach(key => res.cookie(key, cookies[key]));
@@ -28,12 +28,13 @@ function fejkHandler(options, req, res) {
     return res.status(scenario.response.status || 200).send(responseData(req, scenario));
   }
 
-  log.warn(`No matching scenario for ${req.method} ${req.path}`);
+  logger.warn(`No matching scenario for ${req.method} ${req.path}`);
 
   res.status(404).send('No endpoint match found!');
 }
 
 module.exports = ({
+  logger = console,
   path = process.env.FEJK_PATH,
   scenario = 'default',
 } = {}) => {
@@ -42,7 +43,7 @@ module.exports = ({
   router.use(bodyParser.json());
   router.use(cookieParser());
 
-  router.all('*', fejkHandler.bind(null, { path, scenario }));
+  router.all('*', fejkHandler.bind(null, { logger, path, scenario }));
 
   return router;
 };
