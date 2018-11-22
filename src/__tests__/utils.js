@@ -189,9 +189,9 @@ describe('loadScenario', () => {
       method: 'GET',
     }, options);
 
-    expect(load().response.data()).toBe(1);
-    expect(load().response.data()).toBe(1);
-    expect(load().response.data()).toBe(1);
+    expect(load().response.data()).toEqual({ i: 1 });
+    expect(load().response.data()).toEqual({ i: 1 });
+    expect(load().response.data()).toEqual({ i: 1 });
   });
 
   it('loads the default scenario', () => {

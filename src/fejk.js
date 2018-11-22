@@ -16,7 +16,7 @@ function fejkHandler(options, req, res) {
 
   // For now, just respond with a 200 to potential pre-flight requests
   if (req.method === 'OPTIONS') {
-    return res.status(200).send();
+    return res.sendStatus(200);
   }
 
   if (scenario) {
@@ -33,6 +33,10 @@ function fejkHandler(options, req, res) {
   res.status(404).send('No endpoint match found!');
 }
 
+function setupHandler(router, options) {
+  router.all('*', fejkHandler.bind(null, options));
+}
+
 module.exports = ({
   logger = console,
   path = process.env.FEJK_PATH,
@@ -43,7 +47,29 @@ module.exports = ({
   router.use(bodyParser.json());
   router.use(cookieParser());
 
-  router.all('*', fejkHandler.bind(null, { logger, path, scenario }));
+  router.post('/__scenario', (req, res) => {
+    if (!req.body.scenario) {
+      return res.sendStatus(400);
+    }
+
+    // Remove the old handler
+    router.stack.pop();
+
+    // Add the new handler with the updated scenario
+    setupHandler(router, {
+      logger,
+      path,
+      scenario: req.body.scenario,
+    });
+
+    res.sendStatus(201);
+  });
+
+  setupHandler(router, {
+    logger,
+    path,
+    scenario,
+  });
 
   return router;
 };

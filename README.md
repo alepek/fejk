@@ -103,6 +103,14 @@ http://localhost:9090/fejk/colors
 ```
 In this request, the `default` scenario will be used.
 
+### Switching the default scenario
+
+The default scenario used can be switched via an HTTP call to the `/__scenario` endpoint.
+
+```
+curl http://localhost:9090/__scenario -X POST -d '{"scenario":"new-scenario"}' -H 'Content-Type: application/json'
+```
+
 ## Example
 
 Let's take a look at this example `scenario`.
