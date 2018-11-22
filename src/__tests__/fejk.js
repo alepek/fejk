@@ -7,11 +7,16 @@ const dataScenario = require('./__data__/scenario');
 const fejk = require('../fejk');
 
 describe('fejk', () => {
+  const logger = {
+    error: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+  };
   let app;
 
   beforeEach(() => {
     app = express();
-    app.use(fejk({ path: path.join(__dirname, '__data__') }));
+    app.use(fejk({ logger, path: path.join(__dirname, '__data__') }));
   });
 
   it('responds with mock from default scenario', () =>
@@ -36,7 +41,7 @@ describe('fejk', () => {
     process.env.FEJK_PATH = path.join(__dirname, '__data__');
 
     app = express();
-    app.use(fejk());
+    app.use(fejk({ logger }));
 
     return supertest(app)
       .get('/colors')
