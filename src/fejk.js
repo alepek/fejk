@@ -1,80 +1,11 @@
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const decache = require('decache');
 const express = require('express');
-const isSubset = require('is-subset');
 const log = require('fancy-log');
 
+const { loadScenario, responseData } = require('./utils');
+
 const app = express();
-
-/**
- * Finds the matching endpoint among the provided endpoints, returns false if there are no matches
- * @param  {Object} req       An Express.js request object
- * @param  {Array} endpoints An array of fejk endpoints
- * @return {Object}           A single fejk endpoint, or undefined if no matches can be found
- */
-const findMatchingEndpoint = (req, endpoints) => {
-  const matches = endpoints.filter(endpoint => {
-    const valid = endpoint.request && Object.keys(endpoint.request).length;
-    let match = true;
-
-    Object.keys(endpoint.request).forEach(key => {
-      if (typeof (endpoint.request[key]) === 'object') {
-        const set = Object.assign({}, endpoint.request[key]);
-        const subset = Object.assign({}, req[key]);
-        match = match && isSubset(subset, set);
-      } else if (key === 'path') {
-        const regexp = RegExp(endpoint.request[key]);
-        match = match && regexp.test(req[key]);
-      } else {
-        match = match && req[key] === endpoint.request[key];
-      }
-    });
-
-    return match && valid;
-  });
-
-  return matches.length ? matches[0] : undefined;
-};
-
-/**
- * Fetches the response object for the fejk object matching the incoming request, or undefined
- * if there is no response matching the incoming request.
- * @param  {Object} req An Express request object
- * @return {Object}     A fejk response object
- */
-const loadScenario = req => {
-  const scenarioPath = process.env.FEJK_PATH;
-  let response;
-
-  try {
-    const scenarioModule = req.query.scenario || 'default';
-    const fullScenarioPath = `${scenarioPath}/${scenarioModule}`;
-    // clear module from require cache
-    decache(fullScenarioPath);
-    const scenario = require(fullScenarioPath); // eslint-disable-line
-    const endpoints = scenario.endpoints;
-
-    response = findMatchingEndpoint(req, endpoints);
-  } catch (err) {
-    log.error('Scenario server error:', err);
-  }
-
-  return response;
-};
-
-/**
- * Parse response data from endpoint
- * @param  {Object} req       An Express.js request object
- * @param  {Object} endpoint  A fejk response object
- * @return {Object}           Response data for the matching request
- */
-const responseData = (req, endpoint) => {
-  if (typeof (endpoint.response.data) === 'function') {
-    return endpoint.response.data(req);
-  }
-  return endpoint.response.data || 'OK';
-};
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -103,7 +34,7 @@ app.all('*', (req, res) => {
 
     log.info(`Scenario found for ${req.method} ${req.path}`);
   } else { // eslint-disable-line
-    respond = () => res.status(500).send('No endpoint match found!');
+    respond = () => res.status(404).send('No endpoint match found!');
 
     log.warn(`No matching scenario for ${req.method} ${req.path}`);
   }
