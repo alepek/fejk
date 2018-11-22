@@ -29,7 +29,7 @@ Fejk is intended to be consumed by a browser-like client, but should work fine f
 
 Prerequisites: Node.js `^6.10.0`, Express.js.
 
-```
+```js
 const path = require('path');
 const express = require('express');
 const fejk = require('fejk');
@@ -38,16 +38,18 @@ const port = process.env.PORT || 9090;
 const app = express();
 
 // Feel free to mount the fejk express app under any route
-app.use('/fejk', fejk);
+app.use('/fejk', fejk({ path: path.join(__dirname, 'scenarios') }));
 
-// Instructs fejk where to look for scenario files
-process.env.FEJK_PATH = path.join(__dirname, 'scenarios');
 app.listen(port);
 ```
 
 ### Configuration
 
-The `FEJK_PATH` env variable tells fejk where to look for `scenario` files.
+```js
+fejk({
+  path: '/path/to/scenarios' // Defaults to process.env.FEJK_PATH
+});
+```
 
 ### Scenario files
 

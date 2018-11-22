@@ -5,7 +5,7 @@ const log = require('fancy-log');
 /**
  * Finds the matching endpoint among the provided endpoints, returns false if there are no matches
  * @param  {Object} req       An Express.js request object
- * @param  {Array} endpoints An array of fejk endpoints
+ * @param  {Array} endpoints  An array of fejk endpoints
  * @return {Object}           A single fejk endpoint, or undefined if no matches can be found
  */
 const findMatchingEndpoint = (req, endpoints) => {
@@ -35,16 +35,16 @@ const findMatchingEndpoint = (req, endpoints) => {
 /**
  * Fetches the response object for the fejk object matching the incoming request, or undefined
  * if there is no response matching the incoming request.
- * @param  {Object} req An Express request object
- * @return {Object}     A fejk response object
+ * @param  {Object} req     An Express request object
+ * @param  {Object} options An options object
+ * @return {Object}         A fejk response object
  */
-const loadScenario = req => {
-  const scenarioPath = process.env.FEJK_PATH;
+const loadScenario = (req, options) => {
   let response;
 
   try {
     const scenarioModule = req.query.scenario || 'default';
-    const fullScenarioPath = `${scenarioPath}/${scenarioModule}`;
+    const fullScenarioPath = `${options.path}/${scenarioModule}`;
 
     // See https://github.com/dwyl/decache/pull/37
     if (typeof jest !== 'undefined') {
