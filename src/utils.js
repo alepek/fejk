@@ -68,11 +68,6 @@ const loadScenario = (req, options) => {
     const endpoints = scenario.endpoints;
 
     response = findMatchingEndpoint(req, endpoints);
-
-    if (!response) {
-      logger.warn(`Scenario not found for: ${
-        req.method} ${req.protocol}://${req.headers.host}${req.url}`);
-    }
   } catch (err) {
     logger.error('Scenario server error:', err);
   }

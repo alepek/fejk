@@ -20,7 +20,7 @@ function fejkHandler(options, req, res) {
   }
 
   if (scenario) {
-    logger.info(`Scenario found for ${req.method} ${req.path}`);
+    logger.info(`Scenario found for ${req.method} ${req.url}`);
 
     const cookies = scenario.response.cookies || {};
     Object.keys(cookies).forEach(key => res.cookie(key, cookies[key]));
@@ -28,7 +28,9 @@ function fejkHandler(options, req, res) {
     return res.status(scenario.response.status || 200).send(responseData(req, scenario));
   }
 
-  logger.warn(`No matching scenario for ${req.method} ${req.path}`);
+  logger.warn(`No scenario found for ${req.method} ${
+    req.protocol}://${req.headers.host}${req.url} headers:${
+    JSON.stringify(req.headers)} cookies:${JSON.stringify(req.cookies)}`);
 
   res.status(404).send('No endpoint match found!');
 }
