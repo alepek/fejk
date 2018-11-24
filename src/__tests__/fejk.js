@@ -21,41 +21,33 @@ describe('fejk', () => {
     app.use(fejk({ logger, path: path.join(__dirname, '__data__') }));
   });
 
-  it('responds with mock from default scenario', () =>
-    supertest(app)
-      .get('/colors')
-      .expect(200)
-      .expect(dataDefault.endpoints[0].response.data)
-  );
+  it('responds with mock from default scenario', () => supertest(app)
+    .get('/colors')
+    .expect(200)
+    .expect(dataDefault.endpoints[0].response.data));
 
-  it('responds with 404 if request is not found in scenario', () =>
-    supertest(app)
-      .get('/users')
-      .expect(404)
-  );
+  it('responds with 404 if request is not found in scenario', () => supertest(app)
+    .get('/users')
+    .expect(404));
 
-  it('responds with mock from another scenario', () =>
-    supertest(app)
-      .get('/users?scenario=scenario&foo=bar')
-      .set('Cookie', 'track=this')
-      .expect(200)
-      .expect(dataScenario.endpoints[0].response.data)
-  );
+  it('responds with mock from another scenario', () => supertest(app)
+    .get('/users?scenario=scenario&foo=bar')
+    .set('Cookie', 'track=this')
+    .expect(200)
+    .expect(dataScenario.endpoints[0].response.data));
 
-  it('switches default scenario via API', () =>
-    supertest(app)
-      .get('/colors')
+  it('switches default scenario via API', () => supertest(app)
+    .get('/colors')
+    .expect(200)
+    .expect(dataDefault.endpoints[0].response.data)
+    .then(() => supertest(app)
+      .post('/__scenario')
+      .send({ scenario: 'impure' })
+      .expect(201))
+    .then(() => supertest(app)
+      .get('/foo')
       .expect(200)
-      .expect(dataDefault.endpoints[0].response.data)
-      .then(() => supertest(app)
-        .post('/__scenario')
-        .send({ scenario: 'impure' })
-        .expect(201))
-      .then(() => supertest(app)
-        .get('/foo')
-        .expect(200)
-        .expect({ i: 1 }))
-  );
+      .expect({ i: 1 })));
 
   it('uses FEJK_PATH env var', () => {
     process.env.FEJK_PATH = path.join(__dirname, '__data__');
