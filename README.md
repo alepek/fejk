@@ -27,7 +27,8 @@ Fejk is intended to be consumed by a browser-like client, but should work fine f
 
 ## Getting started
 
-Prerequisites: Node.js `^6.10.0`, Express.js.
+Prerequisites: Node.js `^6.10.0`.
+Dependencies required in your project: `body-parser`, `compression`, `cookie-parser`, `express`.
 
 ```js
 const path = require('path');
