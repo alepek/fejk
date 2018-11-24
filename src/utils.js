@@ -65,7 +65,7 @@ const loadScenario = (req, options) => {
     }
 
     const scenario = require(fullScenarioPath); // eslint-disable-line
-    const endpoints = scenario.endpoints;
+    const { endpoints } = scenario;
 
     response = findMatchingEndpoint(req, endpoints);
   } catch (err) {
