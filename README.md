@@ -203,7 +203,7 @@ Using the `cookies`, it is possible to create a service that appears to be state
 
 ### Running the example
 
-Clone the repository, `npm install`, `npm run example` and start sending requests to the fejk!
+Clone the repository, `yarn`, `yarn example` and start sending requests to the fejk!
 
 Hit [the colors endpoint](http://localhost:9090/fejk/colors) to see the `defaults` mechanism in action.
 
