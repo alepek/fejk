@@ -27,9 +27,10 @@ Fejk is intended to be consumed by a browser-like client, but should work fine f
 
 ## Getting started
 
-Prerequisites: Node.js `^6.10.0`, Express.js.
+Prerequisites: Node.js `^6.10.0`.
+Dependencies required in your project: `body-parser`, `compression`, `cookie-parser`, `express`.
 
-```
+```js
 const path = require('path');
 const express = require('express');
 const fejk = require('fejk');
@@ -38,16 +39,20 @@ const port = process.env.PORT || 9090;
 const app = express();
 
 // Feel free to mount the fejk express app under any route
-app.use('/fejk', fejk);
+app.use('/fejk', fejk({ path: path.join(__dirname, 'scenarios') }));
 
-// Instructs fejk where to look for scenario files
-process.env.FEJK_PATH = path.join(__dirname, 'scenarios');
 app.listen(port);
 ```
 
 ### Configuration
 
-The `FEJK_PATH` env variable tells fejk where to look for `scenario` files.
+```js
+fejk({
+  logger: customLogger, // Default: console
+  path: '/path/to/scenarios', // Default: process.env.FEJK_PATH
+  scenario: 'my-scenario', // Default: `default`
+});
+```
 
 ### Scenario files
 
@@ -62,6 +67,8 @@ The `request` object needs to contain at least one key, but can contain any key 
 Any key present in the `request` object must be present in the incoming Express request object and match exactly, with these exceptions:
  * `path` - The path in the `request` can be expressed as a regex.
  * objects - Objects in the `request` object only needs to be a **subset** of the corresponding field in the incoming Express request. This is useful for fields such as `cookies`.
+
+Alternatively `request` can be a validator function, which is passed the incoming express `req` as a first parameter.
 
 #### `response`
 
@@ -97,11 +104,19 @@ http://localhost:9090/fejk/colors
 ```
 In this request, the `default` scenario will be used.
 
+### Switching the default scenario
+
+The default scenario used can be switched via an HTTP call to the `/__scenario` endpoint.
+
+```
+curl http://localhost:9090/__scenario -X POST -d '{"scenario":"new-scenario"}' -H 'Content-Type: application/json'
+```
+
 ## Example
 
 Let's take a look at this example `scenario`.
 
-```JavaScript
+```js
 module.exports = {
   endpoints: [
     {
@@ -165,6 +180,15 @@ module.exports = {
         },
       },
     },
+    {
+      request(req) {
+        return req.headers.host.match(/foo\d\.com/);
+      },
+      response: {
+        status: 200,
+        data: 'bar'
+      }
+    }
   ],
 };
 ```
