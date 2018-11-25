@@ -1,3 +1,12 @@
+## 3.0.0
+* Use yarn instead of npm
+* Upgrade dependencies
+* Support custom validator function in scenario
+* Configuration options
+  * Default scenario name
+  * Custom logger
+  * Scenario path
+
 ## 2.0.2
 Support node 6 and up via package.json
 
