@@ -1,6 +1,6 @@
 {
   "name": "fejk",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "A stateless mock with stateful capabilities",
   "engines": {
     "node": ">=6.10.0"
@@ -11,9 +11,7 @@
     "example": "node example/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "eslint src && eslint __tests__ && echo lint-free!",
-    "precommit": "npm run lint",
-    "prepush": "jest"
+    "lint": "eslint src && echo \"lint-free!\""
   },
   "repository": {
     "type": "git",
@@ -26,33 +24,43 @@
   },
   "homepage": "https://github.com/alepek/fejk#readme",
   "dependencies": {
+    "decache": "^4.1.0",
+    "is-subset": "^0.1.1"
+  },
+  "peerDependencies": {
+    "body-parser": "^1.0.0",
+    "compression": "^1.0.0",
+    "cookie-parser": "^1.0.0",
+    "express": "^4.0.0"
+  },
+  "devDependencies": {
     "body-parser": "^1.17.2",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
-    "decache": "^4.1.0",
-    "express": "^4.15.3",
-    "fancy-log": "^1.3.0",
-    "is-subset": "^0.1.1"
-  },
-  "devDependencies": {
-    "eslint": "^3.19.0",
-    "eslint-config-airbnb": "^14.0.0",
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb": "^17.1.0",
     "eslint-config-defaults": "^9.0.0",
     "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-jsx-a11y": "^3.0.2",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-react": "^6.9.0",
-    "eslint-plugin-standard": "^2.0.1",
-    "husky": "^0.13.4",
-    "jest": "^20.0.4",
-    "jest-cli": "^20.0.4",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "express": "^4.15.3",
+    "husky": "^1.2.0",
+    "jest": "^23.6.0",
     "nodemon": "^1.11.0",
-    "rewire": "^2.5.2"
+    "supertest": "^3.3.0"
   },
   "jest": {
     "coverageDirectory": ".coverage",
     "testPathIgnorePatterns": [
       "__data__"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint",
+      "pre-push": "jest"
+    }
   }
 }

@@ -1,87 +1,12 @@
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const decache = require('decache');
 const express = require('express');
-const isSubset = require('is-subset');
-const log = require('fancy-log');
 
-const app = express();
+const { loadScenario, responseData } = require('./utils');
 
-/**
- * Finds the matching endpoint among the provided endpoints, returns false if there are no matches
- * @param  {Object} req       An Express.js request object
- * @param  {Array} endpoints An array of fejk endpoints
- * @return {Object}           A single fejk endpoint, or undefined if no matches can be found
- */
-const findMatchingEndpoint = (req, endpoints) => {
-  const matches = endpoints.filter(endpoint => {
-    const valid = endpoint.request && Object.keys(endpoint.request).length;
-    let match = true;
-
-    Object.keys(endpoint.request).forEach(key => {
-      if (typeof (endpoint.request[key]) === 'object') {
-        const set = Object.assign({}, endpoint.request[key]);
-        const subset = Object.assign({}, req[key]);
-        match = match && isSubset(subset, set);
-      } else if (key === 'path') {
-        const regexp = RegExp(endpoint.request[key]);
-        match = match && regexp.test(req[key]);
-      } else {
-        match = match && req[key] === endpoint.request[key];
-      }
-    });
-
-    return match && valid;
-  });
-
-  return matches.length ? matches[0] : undefined;
-};
-
-/**
- * Fetches the response object for the fejk object matching the incoming request, or undefined
- * if there is no response matching the incoming request.
- * @param  {Object} req An Express request object
- * @return {Object}     A fejk response object
- */
-const loadScenario = req => {
-  const scenarioPath = process.env.FEJK_PATH;
-  let response;
-
-  try {
-    const scenarioModule = req.query.scenario || 'default';
-    const fullScenarioPath = `${scenarioPath}/${scenarioModule}`;
-    // clear module from require cache
-    decache(fullScenarioPath);
-    const scenario = require(fullScenarioPath); // eslint-disable-line
-    const endpoints = scenario.endpoints;
-
-    response = findMatchingEndpoint(req, endpoints);
-  } catch (err) {
-    log.error('Scenario server error:', err);
-  }
-
-  return response;
-};
-
-/**
- * Parse response data from endpoint
- * @param  {Object} req       An Express.js request object
- * @param  {Object} endpoint  A fejk response object
- * @return {Object}           Response data for the matching request
- */
-const responseData = (req, endpoint) => {
-  if (typeof (endpoint.response.data) === 'function') {
-    return endpoint.response.data(req);
-  }
-  return endpoint.response.data || 'OK';
-};
-
-app.use(bodyParser.json());
-app.use(cookieParser());
-
-app.all('*', (req, res) => {
-  let respond;
-  const scenario = loadScenario(req);
+function fejkHandler(options, req, res) {
+  const { logger } = options;
+  const scenario = loadScenario(req, options);
 
   // Allow CORS
   res.set('Access-Control-Allow-Origin', '*');
@@ -91,24 +16,62 @@ app.all('*', (req, res) => {
 
   // For now, just respond with a 200 to potential pre-flight requests
   if (req.method === 'OPTIONS') {
-    return res.status(200).send();
+    return res.sendStatus(200);
   }
 
   if (scenario) {
-    respond = () => {
-      const cookies = scenario.response.cookies || {};
-      Object.keys(cookies).forEach(key => res.cookie(key, cookies[key]));
-      return res.status(scenario.response.status || 200).send(responseData(req, scenario));
-    };
+    logger.info(`Scenario found for ${req.method} ${req.url}`);
 
-    log.info(`Scenario found for ${req.method} ${req.path}`);
-  } else { // eslint-disable-line
-    respond = () => res.status(500).send('No endpoint match found!');
+    const cookies = scenario.response.cookies || {};
+    Object.keys(cookies).forEach(key => res.cookie(key, cookies[key]));
 
-    log.warn(`No matching scenario for ${req.method} ${req.path}`);
+    return res.status(scenario.response.status || 200).send(responseData(req, scenario));
   }
 
-  return respond();
-});
+  logger.warn(`No scenario found for ${req.method} ${
+    req.protocol}://${req.headers.host}${req.url} headers:${
+    JSON.stringify(req.headers)} cookies:${JSON.stringify(req.cookies)}`);
 
-module.exports = app;
+  res.status(404).send('No endpoint match found!');
+}
+
+function setupHandler(router, options) {
+  router.all('*', fejkHandler.bind(null, options));
+}
+
+module.exports = ({
+  logger = console,
+  path = process.env.FEJK_PATH,
+  scenario = 'default',
+} = {}) => {
+  const router = express.Router();
+
+  router.use(bodyParser.json());
+  router.use(cookieParser());
+
+  router.post('/__scenario', (req, res) => {
+    if (!req.body.scenario) {
+      return res.sendStatus(400);
+    }
+
+    // Remove the old handler
+    router.stack.pop();
+
+    // Add the new handler with the updated scenario
+    setupHandler(router, {
+      logger,
+      path,
+      scenario: req.body.scenario,
+    });
+
+    res.sendStatus(201);
+  });
+
+  setupHandler(router, {
+    logger,
+    path,
+    scenario,
+  });
+
+  return router;
+};

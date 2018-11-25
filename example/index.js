@@ -9,9 +9,7 @@ const port = process.env.PORT || 9090;
 const app = express();
 
 app.use(compression());
-app.use('/fejk', fejk);
-
-process.env.FEJK_PATH = path.join(__dirname, 'scenarios');
+app.use('/fejk', fejk({ path: path.join(__dirname, 'scenarios') }));
 
 app.listen(port, () => {
   console.log(`Fejk is now running at localhost:${port}`);

@@ -1,7 +1,7 @@
 let i = 0;
 const impure = () => {
   i += 1;
-  return i;
+  return { i };
 };
 
 module.exports = {
