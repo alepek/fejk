@@ -10,22 +10,23 @@ Fejk is intended to be consumed by a browser-like client, but should work fine f
 
 * [Terminology](#terminology)
 * [Getting started](#getting-started)
-  * [Configuration](#configuration)
-  * [Scenario files](#scenario-files)
-  * [Sending requests](#sending-requests)
-* [Example](#example)
-  * [Running the example](#running-the-example)
+* [Configuration](#configuration)
+* [Scenario files](#scenario-files)
+* [Selecting scenario](#selecting-scenario)
+* [Switching the default scenario](#switching-the-default-scenario)
+* [Examples and recipes](#examples-and-recipes)
+* [Running the example](#running-the-example)
 
-## Terminology
+# Terminology
 
-* `fejk` - a running instance of `fejk`
-* `scenario` - a collection of `endpoints`, stored in a `.js` file
-* `endpoints` - an array of `endpoint` objects
-* `endpoint` - an object containing a `request` and `response`
-* `request` - a subset of an Express.js request object
-* `response` - `status`, `data`, and `cookies` with which to respond to a `request`
+* `fejk` - a running instance of `fejk`.
+* `scenario` - a collection of `endpoints`, stored in a `.js` file.
+* `endpoints` - an array of `endpoint` objects.
+* `endpoint` - an object containing a `request` and `response` field.
+* `request` - a subset of an Express.js request object.
+* `response` - `status`, `data`, and `cookies` with which to respond to a `request`.
 
-## Getting started
+# Getting started
 
 Prerequisites: Node.js `^6.10.0`.
 Dependencies required in your project: `body-parser`, `compression`, `cookie-parser`, `express`.
@@ -44,7 +45,9 @@ app.use('/fejk', fejk({ path: path.join(__dirname, 'scenarios') }));
 app.listen(port);
 ```
 
-### Configuration
+# Configuration
+
+Fejk accepts the following config options.
 
 ```js
 fejk({
@@ -54,45 +57,54 @@ fejk({
 });
 ```
 
-### Scenario files
+# Scenario files
 
 A scenario file is a `.js` file that should contain an object with an `endpoints` array. The file contents may be generated in any manner you wish, but be aware that it is included by `require` during execution.
 
-Each `endpoint` must contain a `request` and `response` object. The `request` object is used to match against incoming requests to determine whether to use the `response` object as a response or not. If there are several matches the first match in the array of `endpoints` will be used.
+Each `endpoint` must contain a `request` and `response` field. The `request` field is used to match against incoming requests to determine whether to use the `response` field to generate a response or not. If there are several matches the first match in the array of `endpoints` will be used.
 
-#### `request`
+## `request` [object | function]
 
-The `request` object needs to contain at least one key, but can contain any key that is present in an Express request.
+### object
+
+As an object, `request` needs to contain at least one key, but can contain any key that is present in an Express request.
 
 Any key present in the `request` object must be present in the incoming Express request object and match exactly, with these exceptions:
  * `path` - The path in the `request` can be expressed as a regex.
  * objects - Objects in the `request` object only needs to be a **subset** of the corresponding field in the incoming Express request. This is useful for fields such as `cookies`.
 
-Alternatively `request` can be a validator function, which is passed the incoming express `req` as a first parameter.
+### function
 
-#### `response`
+As a function, the `request` field is passed the incoming express `req` as a first parameter, and is expected to return a boolean indicating whether the `endpoint` matches or not.
+
+## `response` [object]
 
 The response object can contain the following properties:
 
-##### `status` [number]
+### `status` [number]
 The status code to respond with. Optional, defaults to `200`.
 
-##### `data` [object | function]
+### `data` [any | function]
 Optional, defaults to `'OK'`.
 
-* If `data` is an object, that object will be sent as the `body` of the response.
-* If `data` is a function, that function will be executed with the incoming Express request as its only parameter. The return value of the function will be sent as the `body` of the response.
+#### any
+
+When `data` is anything other than a function, that field will be sent as the `body` of the response.
+
+#### function
+
+When `data` is a function, that function will be executed with the incoming Express request as its only parameter. The return value of the function will be sent as the `body` of the response.
 
 **Heads up!** `fejk` does not use the require cache to store scenario files, meaning that **the data function must be [Pure](https://en.wikipedia.org/wiki/Pure_function)**. If you provide an impure function it will always respond with the initial state.
 
-##### `cookies` [object]
+### `cookies` [object]
 Optional. Any cookies to set in the response. If omitted no cookies will be set.
 
-### Sending requests
+# Selecting scenario
 
-Fejk has one optional query string parameter - `scenario`. This parameter specifies which scenario file to load. E.g. if you want to use the scenario from the file `/scenarios/entries.js` and you've specified the `FEJK_PATH` as `/scenarios`, the `scenario` parameter should be `entries`.
+Fejk has one reserved optional query string parameter - `scenario`. This parameter specifies which scenario file to load. E.g. if you want to use the scenario from the file `/scenarios/entries.js` and you've configured the scenario path as `/scenarios`, the `scenario` parameter should be `entries`.
 
-If the `scenario` parameter is not specified, fejk will attempt to load a `default` scenario. The `default` scenario must be stored in the root of the `FEJK_PATH` and be named `default.js`.
+If the `scenario` parameter is not specified, fejk will attempt to load a `default` scenario. The `default` scenario must be stored in the root of the configured scenario path and be named `default.js`, or according to the configured option. See [Configuration](#configuration).
 
 Example requests:
 ```
@@ -104,7 +116,7 @@ http://localhost:9090/fejk/colors
 ```
 In this request, the `default` scenario will be used.
 
-### Switching the default scenario
+# Switching the default scenario
 
 The default scenario used can be switched via an HTTP call to the `/__scenario` endpoint.
 
@@ -112,96 +124,154 @@ The default scenario used can be switched via an HTTP call to the `/__scenario` 
 curl http://localhost:9090/__scenario -X POST -d '{"scenario":"new-scenario"}' -H 'Content-Type: application/json'
 ```
 
-## Example
+# Examples and recipes
 
-Let's take a look at this example `scenario`.
+<details>
+  <summary>Basic example</summary>
 
-```js
-module.exports = {
-  endpoints: [
-    {
-      request: {
-        method: 'GET',
-        path: '/items',
-        cookies: {
-          itemsposted: '1',
+  In this basic example the response will always be the same array.
+
+  ```js
+  module.exports = {
+    endpoints: [
+      {
+        request: {
+          method: 'GET',
+          path: '/colors',
+        },
+        response: {
+          data: ['red', 'green', 'blue'],
         },
       },
-      response: {
-        data: [
-          {
-            name: 'item one',
-            id: '1',
+    ],
+  };
+  ```
+
+</details>
+
+<details>
+  <summary>With fake statefulness</summary>
+
+  ```js
+  module.exports = {
+    endpoints: [
+      {
+        request: {
+          method: 'GET',
+          path: '/items',
+          cookies: {
+            itemsposted: '1',
           },
-          {
-            name: 'item two',
-            id: '2',
+        },
+        response: {
+          data: [
+            {
+              name: 'item one',
+              id: '1',
+            },
+            {
+              name: 'item two',
+              id: '2',
+            },
+            {
+              name: 'item three',
+              id: '3',
+            },
+          ],
+          cookies: {
+            itemsposted: '',
           },
-          {
+        },
+      },
+      {
+        request: {
+          method: 'GET',
+          path: '/items',
+        },
+        response: {
+          data: [
+            {
+              name: 'item one',
+              id: '1',
+            },
+            {
+              name: 'item two',
+              id: '2',
+            },
+          ],
+        },
+      },
+      {
+        request: {
+          method: 'POST',
+          path: '/items',
+          body: {
             name: 'item three',
-            id: '3',
           },
-        ],
-        cookies: {
-          itemsposted: '',
+        },
+        response: {
+          status: '201',
+          cookies: {
+            itemsposted: '1',
+          },
         },
       },
-    },
-    {
-      request: {
-        method: 'GET',
-        path: '/items',
-      },
-      response: {
-        data: [
-          {
-            name: 'item one',
-            id: '1',
-          },
-          {
-            name: 'item two',
-            id: '2',
-          },
-        ],
-      },
-    },
-    {
-      request: {
-        method: 'POST',
-        path: '/items',
-        body: {
-          name: 'item three',
+    ],
+  };
+  ```
+
+  In this example an `/items` endpoint is provided. When performing a `GET` request to it the response will contain two items, since there should not be any cookie named `itemsposted` yet, and the first endpoint in the list will therefore not match.
+
+  After performing a `POST` request with the body `{"name": "item three"}` the `itemsposted` cookie will be set to `'1'`.
+
+  On the next `GET` request the first `GET` endpoint in the list will match since the incoming request now contains that cookie. From the browsers perspective the same endpoint is being queried, but the stored item is now present. On this `GET` request the cookie will also be set to an empty string as a means of cleanup.
+
+  Using the `cookies`, it is possible to create a service that appears to be stateful, but it is pushing the statefulness to the client, via cookies.
+</details>
+
+<details>
+  <summary>With function as matcher and data generator</summary>
+
+  In this example a matcher function is used to check the path and query for certain values. Note that fejk can do this without defining a function, as illustrated in the second endpoint in the list.
+
+  ```js
+  module.exports = {
+    endpoints: [
+      {
+        request(req) {
+          return req.path === '/foo' && req.query.foo === 'bar';
+        },
+        response: {
+          status: 200,
+          data: () => 'matched by function, generated by function',
         },
       },
-      response: {
-        status: '201',
-        cookies: {
-          itemsposted: '1',
+      // The function-based approach above can also be represented by the endpoint below.
+      {
+        request: {
+          path: '/foo',
+          query: { foo: 'bar' },
+        },
+        response: {
+          status: 200,
+          data: () => 'matched by object, generated by function',
         },
       },
-    },
-    {
-      request(req) {
-        return req.headers.host.match(/foo\d\.com/);
-      },
-      response: {
-        status: 200,
-        data: 'bar'
+      // The function-based approach is primarily intended for fuzzy, or complex matching.
+      {
+        request(req) {
+          return req.headers.host.match(/foo\d\.com/);
+        },
+        response: {
+          status: 200
+        }
       }
-    }
-  ],
-};
-```
+    ],
+  };
+  ```
+</details>
 
-In the provided example an `/items` endpoint is provided. When performing a `GET` request to it the response will contain two items, since there should not be any cookie named `itemsposted` yet, and the first endpoint in the list will therefore not match.
-
-After performing a `POST` request with the body `{"name": "item three"}` the `itemsposted` cookie will be set to `'1'`.
-
-On the next `GET` request the first `GET` endpoint in the list will match since the incoming request now contains that cookie. From the browsers perspective the same endpoint is being queried, but the stored item is now present. On this `GET` request the cookie will also be set to an empty string as a means of cleanup.
-
-Using the `cookies`, it is possible to create a service that appears to be stateful, but in fact it is not.
-
-### Running the example
+# Running the example
 
 Clone the repository, `yarn`, `yarn example` and start sending requests to the fejk!
 
