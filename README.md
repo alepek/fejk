@@ -12,7 +12,8 @@ Fejk is intended to be consumed by a browser-like client, but should work fine f
 * [Getting started](#getting-started)
 * [Configuration](#configuration)
 * [Scenario files](#scenario-files)
-* [Sending requests](#sending-requests)
+* [Selecting scenario](#selecting-scenario)
+* [Switching the default scenario](#switching-the-default-scenario)
 * [Examples and recipes](#examples-and-recipes)
 * [Running the example](#running-the-example)
 
@@ -64,10 +65,6 @@ Each `endpoint` must contain a `request` and `response` field. The `request` fie
 
 ## `request` [object | function]
 
-### function
-
-As a function, the `request` field is passed the incoming express `req` as a first parameter, and is expected to return a boolean indicating whether the `endpoint` matches or not.
-
 ### object
 
 As an object, `request` needs to contain at least one key, but can contain any key that is present in an Express request.
@@ -76,29 +73,38 @@ Any key present in the `request` object must be present in the incoming Express 
  * `path` - The path in the `request` can be expressed as a regex.
  * objects - Objects in the `request` object only needs to be a **subset** of the corresponding field in the incoming Express request. This is useful for fields such as `cookies`.
 
-## `response`
+### function
+
+As a function, the `request` field is passed the incoming express `req` as a first parameter, and is expected to return a boolean indicating whether the `endpoint` matches or not.
+
+## `response` [object]
 
 The response object can contain the following properties:
 
 ### `status` [number]
 The status code to respond with. Optional, defaults to `200`.
 
-### `data` [object | function]
+### `data` [any | function]
 Optional, defaults to `'OK'`.
 
-* If `data` is an object, that object will be sent as the `body` of the response.
-* If `data` is a function, that function will be executed with the incoming Express request as its only parameter. The return value of the function will be sent as the `body` of the response.
+#### any
+
+When `data` is anything other than a function, that field will be sent as the `body` of the response.
+
+#### function
+
+When `data` is a function, that function will be executed with the incoming Express request as its only parameter. The return value of the function will be sent as the `body` of the response.
 
 **Heads up!** `fejk` does not use the require cache to store scenario files, meaning that **the data function must be [Pure](https://en.wikipedia.org/wiki/Pure_function)**. If you provide an impure function it will always respond with the initial state.
 
 ### `cookies` [object]
 Optional. Any cookies to set in the response. If omitted no cookies will be set.
 
-# Sending requests
+# Selecting scenario
 
-Fejk has one optional query string parameter - `scenario`. This parameter specifies which scenario file to load. E.g. if you want to use the scenario from the file `/scenarios/entries.js` and you've specified the `FEJK_PATH` as `/scenarios`, the `scenario` parameter should be `entries`.
+Fejk has one reserved optional query string parameter - `scenario`. This parameter specifies which scenario file to load. E.g. if you want to use the scenario from the file `/scenarios/entries.js` and you've configured the scenario path as `/scenarios`, the `scenario` parameter should be `entries`.
 
-If the `scenario` parameter is not specified, fejk will attempt to load a `default` scenario. The `default` scenario must be stored in the root of the configured scenrio path and be named `default.js`, or according to the configured option. See [Configuration](#configuration).
+If the `scenario` parameter is not specified, fejk will attempt to load a `default` scenario. The `default` scenario must be stored in the root of the configured scenario path and be named `default.js`, or according to the configured option. See [Configuration](#configuration).
 
 Example requests:
 ```
@@ -214,7 +220,7 @@ curl http://localhost:9090/__scenario -X POST -d '{"scenario":"new-scenario"}' -
   };
   ```
 
-  In the provided example an `/items` endpoint is provided. When performing a `GET` request to it the response will contain two items, since there should not be any cookie named `itemsposted` yet, and the first endpoint in the list will therefore not match.
+  In this example an `/items` endpoint is provided. When performing a `GET` request to it the response will contain two items, since there should not be any cookie named `itemsposted` yet, and the first endpoint in the list will therefore not match.
 
   After performing a `POST` request with the body `{"name": "item three"}` the `itemsposted` cookie will be set to `'1'`.
 
@@ -226,6 +232,8 @@ curl http://localhost:9090/__scenario -X POST -d '{"scenario":"new-scenario"}' -
 <details>
   <summary>With function as matcher and data generator</summary>
 
+  In this example a matcher function is used to check the path and query for certain values. Note that fejk can do this without defining a function, as illustrated in the second endpoint in the list.
+
   ```js
   module.exports = {
     endpoints: [
@@ -235,9 +243,29 @@ curl http://localhost:9090/__scenario -X POST -d '{"scenario":"new-scenario"}' -
         },
         response: {
           status: 200,
-          data: () => 'generated by function',
+          data: () => 'matched by function, generated by function',
         },
       },
+      // The function-based approach above can also be represented by the endpoint below.
+      {
+        request: {
+          path: '/foo',
+          query: { foo: 'bar' },
+        },
+        response: {
+          status: 200,
+          data: () => 'matched by object, generated by function',
+        },
+      },
+      // The function-based approach is primarily intended for fuzzy, or complex matching.
+      {
+        request(req) {
+          return req.headers.host.match(/foo\d\.com/);
+        },
+        response: {
+          status: 200
+        }
+      }
     ],
   };
   ```
