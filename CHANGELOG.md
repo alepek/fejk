@@ -1,3 +1,7 @@
+## 3.0.2
+
+Add authentication example to example project and documentation.
+
 ## 3.0.1
 
 Upgrade documentation
