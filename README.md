@@ -15,7 +15,7 @@ Fejk is intended to be consumed by a browser-like client, but should work fine f
 * [Selecting scenario](#selecting-scenario)
 * [Switching the default scenario](#switching-the-default-scenario)
 * [Examples and recipes](#examples-and-recipes)
-* [Running the example](#running-the-example)
+* [Running the examples](#running-the-examples)
 
 # Terminology
 
@@ -125,6 +125,8 @@ curl http://localhost:9090/__scenario -X POST -d '{"scenario":"new-scenario"}' -
 ```
 
 # Examples and recipes
+
+All of the examples below can be found in the provided example set of scenarios. See [Running the examples](#running-the-examples)
 
 <details>
   <summary>Basic example</summary>
@@ -271,7 +273,59 @@ curl http://localhost:9090/__scenario -X POST -d '{"scenario":"new-scenario"}' -
   ```
 </details>
 
-# Running the example
+<details>
+  <summary>Authentication</summary>
+
+  This example illustrates how you could add an authentication checker to an entire scenario.
+
+  ```js
+    module.exports = {
+    endpoints: [
+      // This endpoint is listed before the auth checker endpoint,
+      // and will therefore not require authentication.
+      {
+        request: {
+          path: '/authenticate',
+          method: 'POST',
+          // You would probably add restrictions on the payload here, this example skips that.
+        },
+        response: {
+          status: 200,
+          cookies: {
+            token: 'auth-token',
+          },
+        },
+      },
+      // The auth checker will be 'pass through' if there is an auth cookie with the right content.
+      // The negated condition can not be expressed by using the simpler request subset matching.
+      {
+        request(req) {
+          // This could be any other property of the request, such as a header, instead.
+          return req.cookies.token !== 'auth-token';
+        },
+        response: {
+          status: 401,
+          data: 'Authorization required',
+        },
+      },
+      // If none of the previous endpoints matched,
+      // the user is authenticated and is not trying to authenticate.
+      {
+        request: {
+          path: '/secured-resource',
+          method: 'GET',
+        },
+        response: {
+          status: 200,
+          data: 'Stuff only authorized users can see',
+        },
+      },
+    ],
+  };
+  ```
+</details>
+
+# Running the examples
 
 Clone the repository, `yarn`, `yarn example` and start sending requests to the fejk!
 
