@@ -9,7 +9,7 @@ function fejkHandler(options, req, res) {
   const scenario = loadScenario(req, options);
 
   // Allow CORS
-  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Origin', `${req.headers.origin || '*'}`);
   res.set('Access-Control-Allow-Methods', 'GET, PUT, POST, OPTIONS, DELETE');
   res.set('Access-Control-Allow-Headers', 'Content-Type');
   res.set('Cache-Control', 'no-cache');

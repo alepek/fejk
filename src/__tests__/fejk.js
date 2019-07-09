@@ -60,4 +60,15 @@ describe('fejk', () => {
       .expect(200)
       .expect(dataDefault.endpoints[0].response.data);
   });
+
+  it('cors: wildcard origin', () => supertest(app)
+    .options('/colors')
+    .expect(200)
+    .expect('Access-Control-Allow-Origin', '*'));
+
+  it('cors: custom origin', () => supertest(app)
+    .options('/colors')
+    .set('Origin', 'https://foo.com')
+    .expect(200)
+    .expect('Access-Control-Allow-Origin', 'https://foo.com'));
 });
