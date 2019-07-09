@@ -6,6 +6,9 @@ module.exports = {
         path: '/colors',
       },
       response: {
+        headers: {
+          'X-Foo': 'bar',
+        },
         data: [
           {
             name: 'red',
