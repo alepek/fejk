@@ -25,6 +25,9 @@ function fejkHandler(options, req, res) {
     const cookies = scenario.response.cookies || {};
     Object.keys(cookies).forEach(key => res.cookie(key, cookies[key]));
 
+    const headers = scenario.response.headers || {};
+    Object.keys(headers).forEach(key => res.set(key, headers[key]));
+
     return res.status(scenario.response.status || 200).send(responseData(req, scenario));
   }
 
