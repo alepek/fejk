@@ -8,6 +8,8 @@ const dataScenario = require('./__data__/scenario');
 
 const fejk = require('../fejk');
 
+const DATA = path.join(__dirname, '__data__');
+
 describe('fejk', () => {
   const logger = {
     error: jest.fn(),
@@ -18,7 +20,7 @@ describe('fejk', () => {
 
   beforeEach(() => {
     app = express();
-    app.use(fejk({ logger, path: path.join(__dirname, '__data__') }));
+    app.use(fejk({ logger, path: DATA }));
   });
 
   it('responds with mock from default scenario', () => supertest(app)
@@ -60,5 +62,56 @@ describe('fejk', () => {
       .get('/colors')
       .expect(200)
       .expect(dataDefault.endpoints[0].response.data);
+  });
+
+  describe('cors', () => {
+    beforeEach(() => {
+      app = express();
+    });
+
+    it('wildcard origin', () => {
+      app.use(fejk({ logger, path: DATA }));
+
+      return supertest(app)
+        .options('/colors')
+        .expect(204)
+        .expect('Access-Control-Allow-Origin', '*')
+        .expect(res => {
+          if (res.headers['access-control-allow-credentials']) {
+            throw new Error('Unexpected header: access-control-allow-credentials');
+          }
+        });
+    });
+
+    it('custom origin', () => {
+      app.use(fejk({
+        cors: {
+          origin: 'https://foo.com'
+        },
+        logger,
+        path: DATA
+      }));
+
+      return supertest(app)
+        .options('/colors')
+        .expect(204)
+        .expect('Access-Control-Allow-Origin', 'https://foo.com');
+    });
+
+    it('credentials', () => {
+      app.use(fejk({
+        cors: {
+          credentials: true,
+        },
+        logger,
+        path: DATA
+      }));
+
+      return supertest(app)
+        .options('/colors')
+        .expect(204)
+        .expect('Access-Control-Allow-Origin', '*')
+        .expect('Access-Control-Allow-Credentials', 'true');
+    });
   });
 });
