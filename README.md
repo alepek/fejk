@@ -51,6 +51,7 @@ Fejk accepts the following config options.
 
 ```js
 fejk({
+  cors: {}, // options for the `cors` middleware
   logger: customLogger, // Default: console
   path: '/path/to/scenarios', // Default: process.env.FEJK_PATH
   scenario: 'my-scenario', // Default: `default`
