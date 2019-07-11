@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/alepek/fejk#readme",
   "dependencies": {
+    "cors": "2.8.5",
     "decache": "^4.1.0",
     "is-subset": "^0.1.1"
   },
