@@ -24,7 +24,8 @@ describe('fejk', () => {
   it('responds with mock from default scenario', () => supertest(app)
     .get('/colors')
     .expect(200)
-    .expect(dataDefault.endpoints[0].response.data));
+    .expect(dataDefault.endpoints[0].response.data)
+    .expect('X-Foo', 'bar'));
 
   it('responds with 404 if request is not found in scenario', () => supertest(app)
     .get('/users')

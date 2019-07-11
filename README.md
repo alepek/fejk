@@ -24,7 +24,7 @@ Fejk is intended to be consumed by a browser-like client, but should work fine f
 * `endpoints` - an array of `endpoint` objects.
 * `endpoint` - an object containing a `request` and `response` field.
 * `request` - a subset of an Express.js request object.
-* `response` - `status`, `data`, and `cookies` with which to respond to a `request`.
+* `response` - `status`, `data`, `headers` and `cookies` with which to respond to a `request`.
 
 # Getting started
 
@@ -99,6 +99,9 @@ When `data` is a function, that function will be executed with the incoming Expr
 
 ### `cookies` [object]
 Optional. Any cookies to set in the response. If omitted no cookies will be set.
+
+### `headers` [object]
+Optional. Any headers to set in the response.
 
 # Selecting scenario
 
