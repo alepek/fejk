@@ -1,3 +1,8 @@
+## 3.1.0
+
+Add CORS middleware and support for configuring it on the entire fejk instance.
+Add support for headers in response object.
+
 ## 3.0.2
 
 Add authentication example to example project and documentation.
