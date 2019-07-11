@@ -1,3 +1,7 @@
+## 4.0.0
+
+Upgrade to require Node 12, major update to dependencies to fix security vulnerabilities.
+
 ## 3.1.0
 
 Add CORS middleware and support for configuring it on the entire fejk instance.
