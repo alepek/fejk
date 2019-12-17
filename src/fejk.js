@@ -1,13 +1,13 @@
-const corsMiddleware = require('cors');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const express = require('express');
+import corsMiddleware from 'cors';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import express from 'express';
 
-const { loadScenario, responseData } = require('./utils');
+import { loadScenario, responseData } from './utils';
 
-function fejkHandler(options, req, res) {
+async function fejkHandler(options, req, res) {
   const { logger } = options;
-  const scenario = loadScenario(req, options);
+  const scenario = await loadScenario(req, options);
 
   res.set('Cache-Control', 'no-cache');
 
@@ -39,12 +39,13 @@ function setupHandler(router, options) {
   router.all('*', fejkHandler.bind(null, options));
 }
 
-module.exports = ({
+export default function fejk({
   cors,
+  extension = '.mjs',
   logger = console,
   path = process.env.FEJK_PATH,
   scenario = 'default',
-} = {}) => {
+} = {}) {
   const router = express.Router();
 
   router.use(bodyParser.json());
@@ -56,11 +57,14 @@ module.exports = ({
       return res.sendStatus(400);
     }
 
+    logger.info(`Changing scenario to ${req.body.scenario}`);
+
     // Remove the old handler
     router.stack.pop();
 
     // Add the new handler with the updated scenario
     setupHandler(router, {
+      extension,
       logger,
       path,
       scenario: req.body.scenario,
@@ -70,10 +74,11 @@ module.exports = ({
   });
 
   setupHandler(router, {
+    extension,
     logger,
     path,
     scenario,
   });
 
   return router;
-};
+}

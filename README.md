@@ -59,6 +59,7 @@ fejk({
 ```
 
 * `cors` - options for the [CORS Middleware](https://github.com/expressjs/cors), see configuration options for more info.
+* `extension` - defaults to `.js`
 * `logger` - a custom logger.
 * `path` - the path to the scenarios folder.
 * `scenario` - which scenario to use as default.

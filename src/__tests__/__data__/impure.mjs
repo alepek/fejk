@@ -4,7 +4,7 @@ const impure = () => {
   return { i };
 };
 
-module.exports = {
+export default {
   endpoints: [
     {
       request: {

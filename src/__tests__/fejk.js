@@ -1,14 +1,11 @@
-/* eslint comma-dangle: 0 */
+import express from 'express';
+import supertest from 'supertest';
+import dataDefault from './__data__/default.mjs';
+import dataScenario from './__data__/scenario.mjs';
 
-const path = require('path');
-const express = require('express');
-const supertest = require('supertest');
-const dataDefault = require('./__data__/default');
-const dataScenario = require('./__data__/scenario');
+import fejk from '../fejk';
 
-const fejk = require('../fejk');
-
-const DATA = path.join(__dirname, '__data__');
+const DATA = './__tests__/__data__';
 
 describe('fejk', () => {
   const logger = {
@@ -53,7 +50,7 @@ describe('fejk', () => {
       .expect({ i: 1 })));
 
   it('uses FEJK_PATH env var', () => {
-    process.env.FEJK_PATH = path.join(__dirname, '__data__');
+    process.env.FEJK_PATH = './__tests__/__data__';
 
     app = express();
     app.use(fejk({ logger }));
@@ -86,10 +83,10 @@ describe('fejk', () => {
     it('custom origin', () => {
       app.use(fejk({
         cors: {
-          origin: 'https://foo.com'
+          origin: 'https://foo.com',
         },
         logger,
-        path: DATA
+        path: DATA,
       }));
 
       return supertest(app)
@@ -104,7 +101,7 @@ describe('fejk', () => {
           credentials: true,
         },
         logger,
-        path: DATA
+        path: DATA,
       }));
 
       return supertest(app)
