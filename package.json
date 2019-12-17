@@ -7,6 +7,7 @@
   },
   "main": "src/fejk.js",
   "entry": "src/fejk.js",
+  "type": "module",
   "scripts": {
     "example": "node example/index.js",
     "test": "jest",
@@ -35,28 +36,42 @@
     "express": "^4.0.0"
   },
   "devDependencies": {
+    "@babel/cli": "7.7.5",
+    "@babel/core": "7.7.5",
+    "@babel/plugin-proposal-dynamic-import": "7.7.4",
+    "@babel/plugin-syntax-dynamic-import": "7.7.4",
+    "@babel/plugin-transform-modules-commonjs": "7.7.5",
+    "babel-jest": "24.9.0",
     "body-parser": "^1.17.2",
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
-    "eslint": "^5.9.0",
-    "eslint-config-airbnb": "^17.1.0",
+    "eslint": "^6.7.2",
+    "eslint-config-airbnb": "^18.0.1",
     "eslint-config-defaults": "^9.0.0",
-    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-react": "^7.11.1",
-    "eslint-plugin-standard": "^4.0.0",
+    "eslint-plugin-react": "^7.17.0",
+    "eslint-plugin-standard": "^4.0.1",
     "express": "^4.15.3",
-    "husky": "^3.0.0",
-    "jest": "^24.8.0",
-    "nodemon": "^1.11.0",
+    "husky": "^3.1.0",
+    "jest": "24.9.0",
+    "nodemon": "^2.0.2",
     "supertest": "^4.0.2"
   },
   "jest": {
     "coverageDirectory": ".coverage",
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "mjs"
+    ],
     "testPathIgnorePatterns": [
       "__data__"
-    ]
+    ],
+    "transform": {
+      "^.+\\.m?js$": "babel-jest"
+    }
   },
   "husky": {
     "hooks": {

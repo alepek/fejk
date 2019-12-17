@@ -1,5 +1,5 @@
-const decache = require('decache');
-const isSubset = require('is-subset');
+import decache from 'decache';
+import isSubset from 'is-subset';
 
 /**
  * Finds the matching endpoint among the provided endpoints, returns false if there are no matches
@@ -7,7 +7,7 @@ const isSubset = require('is-subset');
  * @param  {Array} endpoints  An array of fejk endpoints
  * @return {Object}           A single fejk endpoint, or undefined if no matches can be found
  */
-const findMatchingEndpoint = (req, endpoints) => {
+export function findMatchingEndpoint(req, endpoints = []) {
   const matches = endpoints.filter(endpoint => {
     const { request } = endpoint;
 
@@ -23,9 +23,9 @@ const findMatchingEndpoint = (req, endpoints) => {
     let match = true;
 
     Object.keys(request).forEach(key => {
-      if (typeof (request[key]) === 'object') {
-        const set = Object.assign({}, request[key]);
-        const subset = Object.assign({}, req[key]);
+      if (typeof request[key] === 'object') {
+        const set = { ...request[key] };
+        const subset = { ...req[key] };
         match = match && isSubset(subset, set);
       } else if (key === 'path') {
         const regexp = RegExp(request[key]);
@@ -39,7 +39,7 @@ const findMatchingEndpoint = (req, endpoints) => {
   });
 
   return matches.length ? matches[0] : undefined;
-};
+}
 
 /**
  * Fetches the response object for the fejk object matching the incoming request, or undefined
@@ -48,13 +48,18 @@ const findMatchingEndpoint = (req, endpoints) => {
  * @param  {Object} options An options object
  * @return {Object}         A fejk response object
  */
-const loadScenario = (req, options) => {
-  const { logger, path, scenario: defaultScenario } = options;
+export async function loadScenario(req, options) {
+  const {
+    extension = '.mjs',
+    logger,
+    path,
+    scenario: defaultScenario,
+  } = options;
   let response;
 
   try {
     const scenarioModule = req.query.scenario || defaultScenario;
-    const fullScenarioPath = `${path}/${scenarioModule}`;
+    const fullScenarioPath = `${path}/${scenarioModule}${extension}`;
 
     // See https://github.com/dwyl/decache/pull/37
     if (typeof jest !== 'undefined') {
@@ -64,8 +69,8 @@ const loadScenario = (req, options) => {
       decache(fullScenarioPath);
     }
 
-    const scenario = require(fullScenarioPath); // eslint-disable-line
-    const { endpoints } = scenario;
+    const scenario = await import(fullScenarioPath);
+    const { endpoints } = scenario.default || scenario;
 
     response = findMatchingEndpoint(req, endpoints);
   } catch (err) {
@@ -73,7 +78,7 @@ const loadScenario = (req, options) => {
   }
 
   return response;
-};
+}
 
 /**
  * Parse response data from endpoint
@@ -81,15 +86,9 @@ const loadScenario = (req, options) => {
  * @param  {Object} endpoint  A fejk response object
  * @return {Object}           Response data for the matching request
  */
-const responseData = (req, endpoint) => {
+export function responseData(req, endpoint) {
   if (typeof (endpoint.response.data) === 'function') {
     return endpoint.response.data(req);
   }
   return endpoint.response.data || 'OK';
-};
-
-module.exports = {
-  findMatchingEndpoint,
-  loadScenario,
-  responseData,
-};
+}

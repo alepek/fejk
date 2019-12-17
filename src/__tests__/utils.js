@@ -1,8 +1,7 @@
-const path = require('path');
-const referenceScenario = require('./__data__/scenario');
-const referenceDefaultScenario = require('./__data__/default');
+import referenceScenario from './__data__/scenario.mjs';
+import referenceDefaultScenario from './__data__/default.mjs';
 
-const { findMatchingEndpoint, loadScenario, responseData } = require('../utils');
+import { findMatchingEndpoint, loadScenario, responseData } from '../utils';
 
 describe('endpoint matching', () => {
   it('does not match invalid endpoints', () => {
@@ -74,7 +73,10 @@ describe('endpoint matching', () => {
         status: 200,
       },
     };
-    const endpoints = [endpoint, Object.assign({}, endpoint, { response: { status: 404 } })];
+    const endpoints = [endpoint, {
+      ...endpoint,
+      response: { status: 404 },
+    }];
     const result = findMatchingEndpoint({
       path: '/items/123',
     }, endpoints);
@@ -168,47 +170,55 @@ describe('loadScenario', () => {
     logger: {
       error: jest.fn(),
     },
-    path: path.join(__dirname, '__data__'),
+    path: './__tests__/__data__',
     scenario: 'default',
   };
 
-  it('loads the reference scenario', () => {
-    const scenario = loadScenario({
+  it('loads the reference scenario', async () => {
+    const scenario = await loadScenario({
       path: '/users',
       method: 'GET',
       query: { scenario: 'scenario', foo: 'bar', cookiesShould: 'doSuperSetMatching' },
       cookies: { track: 'this' },
     }, options);
+
     expect(scenario).toEqual(referenceScenario.endpoints[0]);
   });
 
-  it('does not use the require cache', () => {
+  it('does not use the require cache', async () => {
     const load = () => loadScenario({
       path: '/impure',
       query: { scenario: 'impure' },
       method: 'GET',
     }, options);
 
-    expect(load().response.data()).toEqual({ i: 1 });
-    expect(load().response.data()).toEqual({ i: 1 });
-    expect(load().response.data()).toEqual({ i: 1 });
+    const first = await load();
+    expect(first.response.data()).toEqual({ i: 1 });
+    const second = await load();
+    expect(second.response.data()).toEqual({ i: 1 });
+    const third = await load();
+    expect(third.response.data()).toEqual({ i: 1 });
   });
 
-  it('loads the default scenario', () => {
-    const scenario = loadScenario({
+  it('loads the default scenario', async () => {
+    const scenario = await loadScenario({
       path: '/colors',
       method: 'GET',
       query: {},
     }, options);
+
     expect(scenario).toEqual(referenceDefaultScenario.endpoints[0]);
   });
 
-  it('respects the options path', () => {
-    const scenario = loadScenario({
+  it('respects the options path', async () => {
+    const scenario = await loadScenario({
       path: '/colors',
       method: 'GET',
       query: {},
-    }, Object.assign({}, options, { path: '.' }));
+    }, {
+      ...options,
+      path: '.',
+    });
 
     expect(scenario).not.toBeDefined();
   });

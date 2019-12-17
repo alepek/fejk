@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   endpoints: [
     // This endpoint is listed before the auth checker endpoint,
     // and will therefore not require authentication.
