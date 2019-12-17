@@ -9,7 +9,7 @@
   "entry": "src/fejk.js",
   "type": "module",
   "scripts": {
-    "example": "node example/index.js",
+    "example": "node --experimental-modules --es-module-specifier-resolution=node example/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint src && echo \"lint-free!\""
